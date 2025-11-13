@@ -1,18 +1,18 @@
 # microprocessor_fibonacci_dd2025
 
 - ALU 
-    JAIME
+    - JAIME
 - CONTROL_UNIT
-    RODRIGO
+    - RODRIGO
 - UART
-    MANUEL
+    - MANUEL
 - REGISTER BANK 
-    SEBASTIAN
+    - SEBASTIAN
 - MEMS
-    SABINA
+    - SABINA
 - SIGN EXTEND
-    ERIKA
+    - ERIKA
 - PROGRAM COUNTER
-    RAMON
+    - RAMON
 - TESTBENCH
-    ISRAEL
+    - ISRAEL
