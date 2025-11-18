@@ -1,0 +1,55 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: Cinvestav
+// Engineer: Armando sebastian Ramirez Jimenez
+// 
+// Create Date: 18.11.2025 15:36:43
+// Design Name: 
+// Module Name: bank_reg_s
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module bank_reg_s(
+    input logic clk,                    //Clock signal
+    input logic arst_n,                 //Reset signal
+    input logic write_en,               //Write enable signal
+    input logic [4:0] read_dir1,        //Read direction 1
+    input logic [4:0] read_dir2,        //Read direction 2
+    input logic [4:0] write_dir,        //Write direction
+    input logic [31:0] write_data,      //Data to write
+    output logic [31:0] read_data1,     //Readed Data 1
+    output logic [31:0] read_data2      //Readed Data 2
+    );
+    
+    logic [31:0] prf [0:31];    //Physical Register File 32*32bits
+    
+    always_ff@(posedge clk,negedge arst_n)begin 
+    //registers <= '{default:'0};
+        if (arst_n == 1'b0)begin                        //Condition of reset
+            for (int i = 0 ; i < 32; i++) begin         //For cicle to reset to 0 all values of memory array
+                prf [i]<= '0;
+            end
+        end else begin
+            if (write_en & (write_dir != 5'b00000))begin    //If write enable is set and the direction of write is not 0, then write memory array
+                prf [write_dir] <= write_data;              //Memory array assignation
+            end
+        end
+    end
+    
+    always_comb begin
+        read_data1 = read_dir1 == 5'b00000 ? '0 : prf [read_dir1];      //Assignation of readed data 1 depending of read direction 1
+        read_data2 = read_dir2 == 5'b00000 ? '0 : prf [read_dir2];      //Assignation of readed data 2 depending of read direction 2
+    end
+    
+endmodule
