@@ -1,0 +1,3 @@
+Assertion para verificar que cuando wen = 1, el dato se almacene correctamente
+Assertion para verificar que el x0 siempre sea igual a 0
+Assertion para verificar que cuando se escribe y se lee al mismo tiempo, el resultado sea el esperado
