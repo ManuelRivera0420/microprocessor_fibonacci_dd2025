@@ -19,26 +19,26 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
-
-module bank_reg_s(
+module bank_reg_s #(parameter DIR_WIDTH = 5, parameter DATA_WIDTH = 32)(
     input logic clk,                    //Clock signal
     input logic arst_n,                 //Reset signal
     input logic write_en,               //Write enable signal
-    input logic [4:0] read_dir1,        //Read direction 1
-    input logic [4:0] read_dir2,        //Read direction 2
-    input logic [4:0] write_dir,        //Write direction
-    input logic [31:0] write_data,      //Data to write
-    output logic [31:0] read_data1,     //Readed Data 1
-    output logic [31:0] read_data2      //Readed Data 2
+    input logic [DIR_WIDTH - 1:0] read_dir1,        //Read direction 1
+    input logic [DIR_WIDTH - 1:0] read_dir2,        //Read direction 2
+    input logic [DIR_WIDTH - 1:0] write_dir,        //Write direction
+    input logic [DATA_WIDTH - 1:0] write_data,      //Data to write
+    output logic [DATA_WIDTH - 1:0] read_data1,     //Readed Data 1
+    output logic [DATA_WIDTH - 1:0] read_data2      //Readed Data 2
     );
     
-    logic [31:0] prf [0:31];    //Physical Register File 32*32bits
+    `include "../../defines.svh"
+    
+    logic [DATA_WIDTH - 1:0] prf [0:DATA_WIDTH - 1];    //Physical Register File 32*32bits
     
     always_ff@(posedge clk,negedge arst_n)begin 
     //registers <= '{default:'0};
         if (arst_n == 1'b0)begin                        //Condition of reset
-            for (int i = 0 ; i < 32; i++) begin         //For cicle to reset to 0 all values of memory array
+            for (int i = 0 ; i < DATA_WIDTH; i++) begin         //For cicle to reset to 0 all values of memory array
                 prf [i]<= '0;
             end
         end else begin
