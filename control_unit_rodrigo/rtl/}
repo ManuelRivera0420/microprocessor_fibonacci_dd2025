@@ -1,0 +1,45 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: Rodrigo Mata 
+// 
+// Create Date: 14.11.2025 18:24:51
+// Design Name: 
+// Module Name: control_unit
+//////////////////////////////////////////////////////////////////////////////////
+
+// TEST REPO
+module control_unit(
+	input logic clk,
+	input logic arst_n,
+	input logic [6:0] opcode,
+	input logic [2:0] funct_3,
+	input logic [6:0] func_7,
+	output logic branch,
+	output logic memread,
+	output logic memtoreg,
+	output logic aluop,
+	output logic memwrite,
+	output logic alusource,
+	output logic regwrite
+);
+	//Define te instructions 
+	
+    
+	always_ff @(posedge clk, negedge arst_n) begin 
+    if(!arst_n) begin 
+      branch <= '0;
+      memread <= '0; 
+      memtoreg <= '0;
+      aluop <= '0;
+      memwrite <= '0;
+      alusource <= '0;
+      regwrite <= '0;
+    end else begin 
+      case (opcode)
+      	//logic  
+   		endcase
+    end
+	end
+
+endmodule
