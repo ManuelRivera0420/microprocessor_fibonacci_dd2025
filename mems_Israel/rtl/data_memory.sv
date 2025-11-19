@@ -9,12 +9,12 @@ module Data_Memory (
     logic [31:0] ram [0:63]; 
 
     // Lectura combinacional
-    assign rd = ram[a[31:2]];
+    assign rd = ram[add[31:2]];
 
     // Escritura secuencial
     always_ff @(posedge clk) begin
         if (we) begin
-            ram[a[31:2]] <= wd;
+            ram[add[31:2]] <= wd;
         end
     end
 
