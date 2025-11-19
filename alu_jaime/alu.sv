@@ -4,6 +4,9 @@
  * TO DO: Replace temporal OpCodes for the proper Codes
  * (Possibly) write a module for each operation with primitives if necessary
  * Double check if this are all the base arithmetic operations of RV32I
+ * IMPORTANT
+ * add a mux to select weather the second oparasator is rs2 or data from imm generator
+ * change the input instruction to 4 bits 
  */
 // ALU for R type arithmetic instructions 
 module alu #(parameter N = 32)(
