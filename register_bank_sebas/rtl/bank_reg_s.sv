@@ -48,8 +48,8 @@ module bank_reg_s(
     end
     
     always_comb begin
-        read_data1 = read_dir1 == 5'b00000 ? '0 : prf [read_dir1];      //Assignation of readed data 1 depending of read direction 1
-        read_data2 = read_dir2 == 5'b00000 ? '0 : prf [read_dir2];      //Assignation of readed data 2 depending of read direction 2
+        read_data1 = read_dir1 == write_dir ? write_data : prf [read_dir1];      //Assignation of readed data 1 depending of read direction 1
+        read_data2 = read_dir2 == write_dir ? write_data : prf [read_dir2];      //Assignation of readed data 2 depending of read direction 2
     end
     
 endmodule
