@@ -8,5 +8,3 @@ localparam JAL     = 7'b110_1111;  	// Unconditional jump and link
 localparam JALR    = 7'b110_0111;  	// Jump to register location
 localparam LUI     = 7'b011_0111;  	// Load upper immediate
 localparam AUIPC   = 7'b001_0111;  	// Add upper immediate to PC
-localparam DATA_WIDTH = 32;			// Width of word 
-localparam DIR_WIDTH = 5;			// Width of direction
