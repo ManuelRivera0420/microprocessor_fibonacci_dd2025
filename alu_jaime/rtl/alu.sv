@@ -1,8 +1,9 @@
 `timescale 1ns / 1ps
+import micro_const_pkg::*;
 
 /*
  * TO DO:
- * Replace temporal OpCodes for the proper Codes
+ * Verify proper functionality with Control Unit
  * Remove operations that might be unused in the final design
  * THINGS TO CONSIDER:
  * Currently, repeated addition is unsuported because of the lack of carry-in input
@@ -19,48 +20,32 @@ module alu #(parameter N = 32)(
     output logic [N-1:0] reg_destiny    // ALU result, destiny is another register
     );
     
-    // Temporal OpCodes
-    localparam ADD  = 4'b0000; // Addition
-    localparam SUB  = 4'b0001; // Substraction
-    
-    localparam AND  = 4'b0010; // Bitwise AND
-    localparam OR   = 4'b0011; // Bitwise OR
-    localparam XOR  = 4'b0100; // Bitwise XOR
-
-    localparam EQ   = 4'b0101; // Set if equal
-    localparam SLT  = 4'b0110; // Set if Less Than
-    localparam SLTU = 4'b1000; // Set if Less that unsigned
-
-    localparam SLL  = 4'b1001; // Shift Left Logic
-    localparam SRL  = 4'b1010; // Shift Right Logic
-    localparam SRA  = 4'b1011; // Shift Right Arithmetic
-
     logic [N-1:0] second_operand;
 
-    // MUX to determine second operator
-    assign second_operand = alusrc ? reg_source2 : immg_source;
+    // MUX to determine second operator; if true, use immediate value
+    assign second_operand = alusrc ? immg_source : reg_source2;
 
     always_comb begin
         unique case(instruction)
-            ADD: begin  // At the moment we don't care about the carry
+            ALU_ADD: begin  // At the moment we don't care about the carry
                 reg_destiny = reg_source1 + second_operand;
             end
-            SUB: begin
+            ALU_SUB: begin
                 reg_destiny = reg_source1 - second_operand;
             end
-            AND: begin
+            ALU_AND: begin
                 reg_destiny = reg_source1 & second_operand;
             end
-            OR: begin
+            ALU_OR: begin
                 reg_destiny = reg_source1 | second_operand;
             end
-            XOR: begin
+            ALU_XOR: begin
                 reg_destiny = reg_source1 ^ second_operand;
             end
-            EQ: begin
+            ALU_EQ: begin
                 reg_destiny = reg_source1 == second_operand;
             end
-            SLT: begin  // Compare sign bit
+            ALU_SLT: begin  // Compare sign bit
                 if (reg_source1[N-1] != second_operand[N-1]) begin
                     // Find which operand has the negative sign
                     reg_destiny = reg_source1[N-1] > second_operand[N-1];
@@ -69,16 +54,16 @@ module alu #(parameter N = 32)(
                     reg_destiny = reg_source1[N-2:0] < second_operand[N-2:0];
                 end
             end
-            SLTU: begin
+            ALU_SLTU: begin
                 reg_destiny = reg_source1 < second_operand;
             end
-            SLL: begin
+            ALU_SLL: begin
                 reg_destiny = reg_source1 << second_operand;
             end
-            SRL: begin
+            ALU_SRL: begin
                 reg_destiny = reg_source1 >> second_operand;
             end
-            SRA: begin
+            ALU_SRA: begin
                 // >>>: Arithmetic right shift preserves MSB
                 reg_destiny = reg_source1 >>> second_operand;
             end
