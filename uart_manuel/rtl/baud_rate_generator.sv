@@ -10,10 +10,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module baud_rate_generator #(parameter CLK_FREQ = 50_000_000)(
+module baud_rate_generator #(parameter CLK_FREQ = 100_000_000)(
 input logic clk,
 input logic arst_n,
 input logic [3:0] baud_sel,
+input logic enable,
 output logic tick
 );
 
@@ -36,19 +37,19 @@ logic [15:0] counter;
 
 always_comb begin
     case(baud_sel)
-        4'b0000: counter_max = (CLK_FREQ / BAUD_RATE_0);
-        4'b0001: counter_max = (CLK_FREQ / BAUD_RATE_1); 
-        4'b0010: counter_max = (CLK_FREQ / BAUD_RATE_2); 
-        4'b0011: counter_max = (CLK_FREQ / BAUD_RATE_3); 
-        4'b0100: counter_max = (CLK_FREQ / BAUD_RATE_4); 
-        4'b0101: counter_max = (CLK_FREQ / BAUD_RATE_5); 
-        4'b0110: counter_max = (CLK_FREQ / BAUD_RATE_6); 
-        4'b0111: counter_max = (CLK_FREQ / BAUD_RATE_7); 
-        4'b1000: counter_max = (CLK_FREQ / BAUD_RATE_8); 
-        4'b1001: counter_max = (CLK_FREQ / BAUD_RATE_9); 
-        4'b1010: counter_max = (CLK_FREQ / BAUD_RATE_10); 
-        4'b1011: counter_max = (CLK_FREQ / BAUD_RATE_11); 
-        4'b1100: counter_max = (CLK_FREQ / BAUD_RATE_12); 
+        4'b0000: counter_max = (CLK_FREQ / ((BAUD_RATE_0 * 16)) + 0.5) - 1;
+        4'b0001: counter_max = (CLK_FREQ / ((BAUD_RATE_1 * 16)) + 0.5) - 1; 
+        4'b0010: counter_max = (CLK_FREQ / ((BAUD_RATE_2 * 16)) + 0.5) - 1; 
+        4'b0011: counter_max = (CLK_FREQ / ((BAUD_RATE_3 * 16)) + 0.5) - 1; 
+        4'b0100: counter_max = (CLK_FREQ / (BAUD_RATE_4 * 16)) - 1; 
+        4'b0101: counter_max = (CLK_FREQ / (BAUD_RATE_5 * 16)) - 1; 
+        4'b0110: counter_max = (CLK_FREQ / (BAUD_RATE_6 * 16)) - 1; 
+        4'b0111: counter_max = (CLK_FREQ / (BAUD_RATE_7 * 16)) - 1; 
+        4'b1000: counter_max = (CLK_FREQ / (BAUD_RATE_8 * 16)) - 1; 
+        4'b1001: counter_max = (CLK_FREQ / (BAUD_RATE_9 * 16)) - 1; 
+        4'b1010: counter_max = (CLK_FREQ / (BAUD_RATE_10 * 16)) - 1; 
+        4'b1011: counter_max = (CLK_FREQ / (BAUD_RATE_11 * 16)) - 1; 
+        4'b1100: counter_max = (CLK_FREQ / (BAUD_RATE_12 * 16)) - 1; 
     endcase
 end
 
@@ -57,12 +58,14 @@ always_ff @(posedge clk or negedge arst_n) begin
         tick <= 1'b0;
         counter <= '0;
     end else begin
-        if(counter == counter_max) begin
-            counter <= '0;
-            tick <= 1'b1;
-        end else begin
-            counter <= counter + 1;
-            tick <= 1'b0;
+        if(enable) begin
+            if(counter == counter_max) begin
+                counter <= '0;
+                tick <= 1'b1;
+            end else begin
+                counter <= counter + 1;
+                tick <= 1'b0;
+            end
         end
     end
 end

@@ -20,29 +20,44 @@ logic [3:0] baud_sel;
 logic [DATA_WIDTH - 1 : 0] data_out;
 logic rx_done;
 logic rx;
+logic tick;
+logic enable;
 
-always #10ns clk = !clk;
+always #5ns clk = !clk;
 assign #50ns arst_n = 1'b1;
 
 initial begin
     repeat(10) @(posedge clk);
     @(posedge clk);
-    rx <= 1'b0;
-    #1ms;
     rx <= 1'b1;
-    #10ms;
+    #100us;
+    rx <= 1'b0;
+    #100us;
+    rx <= 1'b1;
+    #100us;
+    rx <= 1'b0;    
+    #100us;
+    rx <= 1'b1;
+    #100us;
+    rx <= 1'b1;
+    #100us;
+    rx <= 1'b0;
+    #100us;
+    rx <= 1'b1;    
+    #500us;
     $finish;
 end
 
 initial begin
-    baud_sel <= 4'b1001;
+    baud_sel <= 4'b0011;
 end
 
 receiver receiver_i(
     .clk(clk),
     .arst_n(arst_n),
     .tick(tick),
-    .rx(tx),
+    .rx(rx),
+    .enable(enable),
     .rx_done(rx_done),
     .data_out(data_out)
 );
@@ -51,6 +66,7 @@ baud_rate_generator baud_rate_generator_i(
 .clk(clk),
 .arst_n(arst_n),
 .baud_sel(baud_sel),
+.enable(enable),
 .tick(tick)
 );
 
