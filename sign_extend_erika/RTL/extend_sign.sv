@@ -22,9 +22,10 @@
 
 
 module extend_sign #(parameter WIDTH_IN  = 12,parameter WIDTH_OUT = 32)(
-    input  logic [WIDTH_IN-1:0] imm_in,
-    output logic [WIDTH_OUT-1:0] imm_out
+    input  logic [WIDTH_IN-1:0] imm_in,  //Input received from the immediate generator
+    output logic [WIDTH_OUT-1:0] imm_out  //Output delivered is 32 bits
 );
-    localparam WIDTH_EXTEND = WIDTH_OUT - WIDTH_IN;
-    assign imm_out = {{WIDTH_EXTEND{imm_in[ WIDTH_IN-1]}}, imm_in};
+    localparam WIDTH_EXTEND = WIDTH_OUT - WIDTH_IN; // Variable to determine number of bits to extend
+    assign imm_out = {{WIDTH_EXTEND{imm_in[ WIDTH_IN-1]}}, imm_in};// Concatenation to 32 bits
+
 endmodule
