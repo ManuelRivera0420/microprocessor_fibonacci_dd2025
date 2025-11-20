@@ -23,7 +23,7 @@ module Instruction_Memory (
     // 2. Escritura con la FIFO sincrona
     always_ff @(posedge clk) begin
         if (we) begin
-            // Discrimina los 2 bits menos significativos
+            // Discrimina los 2 bits menos significativos "como si fuera división entre 4"
             mem[dir[31:2]] <= data_in;      // Si viene por byte (4 en4) "dir[31:2]", si viene de 1 en 1 "mem[dir]"
         end
     end
