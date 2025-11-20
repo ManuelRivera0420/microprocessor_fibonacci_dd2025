@@ -12,10 +12,16 @@ module Data_Memory (
     // Lectura debe de ser combinacional
     assign rd = ram[a[31:2]];
 
+    // 1. Inicialización (Limpieza)
+    initial begin
+        for (int i=0; i<7; i++) 
+            ram[i] = 32'b0;
+    end
+    
     // Escritura debe de ser secuencial
     always_ff @(posedge clk) begin
         if (we) begin
-            ram[a[31:2]] <= di;
+            ram[a[31:2]] <= di;         //si WE es 1, se escribe en la ram el valor
         end
     end
 

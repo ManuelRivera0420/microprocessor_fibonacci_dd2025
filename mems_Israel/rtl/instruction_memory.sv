@@ -14,16 +14,16 @@ module Instruction_Memory (
     // Memoria de 32 bits y 8 renglones (instrucciones)
     logic [31:0] mem [0:7]; 
 
-    // 1. Inicialización (Limpieza)
+    // 1. Inicialización (limpieza)
     initial begin
-        for (int i=0; i<7; i++) 
+        for (int i=0; i<8; i++) 
             mem[i] = 32'b0;
     end
 
     // 2. Escritura con la FIFO sincrona
     always_ff @(posedge clk) begin
         if (we) begin
-            // Discrimina los 2 bits menos significativos "como si fuera división entre 4"
+            // Discrimina los 2 bits menos significativos "como si fuera división entre 4", y asi indicamos que reglon (instruccion) se está
             mem[dir[31:2]] <= data_in;      // Si viene por byte (4 en4) "dir[31:2]", si viene de 1 en 1 "mem[dir]"
         end
     end
