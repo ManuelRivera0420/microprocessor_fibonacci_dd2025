@@ -46,9 +46,9 @@ module fifo_s #(parameter DATA_WIDTH = 32)(
             uart_data32 <= '0;                  //Set uart_data32 to 0
             uart_data32_done <= 1'b0;           //Set uart_data32_done to 0
         end else begin
-            if(load == 3'b100) begin            //Condition to assign data to write in FIFO
+            if(load > 3'b011) begin             //Condition to assign data to write in FIFO
                 wdata <= uart_data32;           //Assignation of wdata
-                load <= 1'b0;                   //Reset counter of load space of uart_data32
+                load <= 3'b000;                 //Reset counter of load space of uart_data32
                 uart_data32_done <= 1'b1;       //Indicates that is ready to FIFO
             end else begin
                 uart_data32_done <= 1'b0;                   //Received data from uart is not done
