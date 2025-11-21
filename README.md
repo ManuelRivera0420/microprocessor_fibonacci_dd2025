@@ -1,6 +1,7 @@
 # microprocessor_fibonacci_dd2025
 
-![Microprocessor microarchitecture.]([https://myoctocat.com/assets/images/base-octocat.svg](https://github.com/ManuelRivera0420/microprocessor_fibonacci_dd2025/blob/microprocessor_draft/documentation/microarquitectura_fibonacci.drawio.png))
+![diagrama](./documentation/microarquitectura_fibonacci.drawio.png
+)
 
 - ALU 
     - JAIME
