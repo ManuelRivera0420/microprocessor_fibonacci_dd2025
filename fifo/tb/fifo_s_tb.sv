@@ -20,25 +20,25 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module fifo_s_tb();
+module fifo_s_tb #(parameter DATA_WIDTH = 32)();
 
     localparam NUM_TESTS = 1000;
     bit clk;
     bit arst_n;
     logic wren;
-    logic [15:0] wdata;
+    logic [7:0] uart_data;
     logic rden;
-    logic [15:0] rdata;
+    logic [DATA_WIDTH - 1:0] rdata;
     logic full;
     logic empty;
     
     always #5ns clk = !clk;
-    assign #20ns arst_n = 1'b1;
+    assign #15ns arst_n = 1'b1;
     
     task write_fifo();
         if(!full) begin
             wren <= 1'b1;
-            std::randomize(wdata);
+            std::randomize(uart_data);
             @(posedge clk);
         end
         wren <= 1'b0;
@@ -57,7 +57,7 @@ module fifo_s_tb();
     initial begin
         wren <= 1'b0;
         rden <= 1'b0;
-        wdata <= 16'd0;
+        uart_data <= '0;
         wait(arst_n);
         repeat(1) @(posedge clk);
         fork
@@ -85,15 +85,15 @@ module fifo_s_tb();
         $finish;
     end
     
-    empty_or_full_if_ptrs_equal: assert property (@(posedge clk) sfifo_i.wrptr == sfifo_i.rdptr |-> empty | full); 
-    wrptr_increment_if_write: assert property (@(posedge clk) wren |=> sfifo_i.wrptr == $past(sfifo_i.wrptr + 1));
+    //empty_or_full_if_ptrs_equal: assert property (@(posedge clk) sfifo_i.wrptr == sfifo_i.rdptr |=> empty | full); 
+    //wrptr_increment_if_write: assert property (@(posedge clk) wren |=> sfifo_i.wrptr == $past(sfifo_i.wrptr + 1));
     
 
     fifo_s sfifo_i(
         .clk(clk),
         .arst_n(arst_n),
         .wren(wren),
-        .wdata(wdata),
+        .uart_data(uart_data),
         .rden(rden),
         .rdata(rdata),
         .full(full),

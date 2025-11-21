@@ -40,21 +40,28 @@ module fifo_s #(parameter DATA_WIDTH = 32)(
     logic uart_data32_done;                     //Temporal signal that indicates uart data full received
     logic [2:0] load;                           //Counter to receive 4 bytes from uart
     
+    initial begin
+        for (int i =0; i<DATA_WIDTH;i++)begin
+            mem[i]='0;
+        end
+    end
+    
     //UART DATA TO 32BITS MODULE
     always_ff@(posedge clk, negedge arst_n) begin
         if(!arst_n) begin
             uart_data32 <= '0;                  //Set uart_data32 to 0
             uart_data32_done <= 1'b0;           //Set uart_data32_done to 0
+            load <= '0;
         end else begin
             if(load > 3'b011) begin             //Condition to assign data to write in FIFO
                 wdata <= uart_data32;           //Assignation of wdata
                 load <= 3'b000;                 //Reset counter of load space of uart_data32
                 uart_data32_done <= 1'b1;       //Indicates that is ready to FIFO
             end else begin
-                uart_data32_done <= 1'b0;                   //Received data from uart is not done
-                if (wren)begin                              //Condition to shift data in uart_data32
-                    uart_data32 <= {uart_data32, wdata};    //Assignation of uart_data32
-                    load <= load + 1'b1;                    //Increases counter load in 1 unit
+                uart_data32_done <= 1'b0;                           //Received data from uart is not done
+                if (wren)begin                                      //Condition to shift data in uart_data32
+                    uart_data32 <= {uart_data32, uart_data};        //Assignation of uart_data32
+                    load <= load + 1'b1;                            //Increases counter load in 1 unit
                 end
             end
         end
@@ -85,7 +92,7 @@ module fifo_s #(parameter DATA_WIDTH = 32)(
         end
     end
 
-    assign rdata = rden ? mem[rdptr] : '0;                              //Assignation of readed data
+    assign rdata = rden ? (rdptr == wrptr ? wdata : mem [rdptr]) : '0;              //Assignation of readed data
     assign early_full = (wrptr == (rdptr - 1'b1)) && uart_data32_done && (!rden);   //If write address is one step to be the same than read address, and uart_data32_done and read is not enable, then early_full is set
     assign early_empty = (rdptr == (wrptr - 1'b1)) && rden && (!uart_data32_done);  //If read address is one step to be the same than write address, and read is enable and !uart_dat32, then early_empty is set 
 
