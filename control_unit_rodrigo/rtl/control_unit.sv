@@ -18,31 +18,13 @@ module control_unit(
 	output logic memwrite,
 	output logic memtoreg,
 	output logic alusrc,
+	output logic pc_write,
 	output logic [1:0] pc_sel,
 	output logic [2:0] imm_type,
 	output logic [3:0] alucontrol
 );
 	//Define the instructions 
-	//`include "../../defines.svh"
-	localparam OPCODE_R_TYPE = 7'b0110011;
-	localparam OPCODE_I_TYPE = 7'b0010011;
-	localparam OPCODE_B_TYPE = 7'b1100011;
-	localparam OPCODE_J_TYPE = 7'b1101111;
-	//Define the intructions for ALU
-	localparam ALU_ADD = 4'b0000;
-	localparam ALU_SUB = 4'b0001;
-	//define the imm instructions 
-    localparam IMM_I = 3'b000;   // Type I  (ADDI, LW, JALR, etc.)
-    localparam IMM_S = 3'b001;   // Type S  (SW, SH, SB)
-    localparam IMM_B = 3'b010;   // Type B  (BEQ, BNE, etc.)
-    localparam IMM_U = 3'b011;   // Type U  (LUI, AUIPC)
-    localparam IMM_J = 3'b100;   // Type J  (JAL)
-    localparam IMM_NF = 3'b101; //No function 
-    //define the PC count logic instructions 
-    localparam PC_4 = 2'b00;
-    localparam PC_IMM = 2'b01; 
-    
-    
+	`include "../../defines.svh"
     
 	always_comb begin 
 		unique case (opcode)
@@ -55,6 +37,7 @@ module control_unit(
 					imm_type = IMM_I;
 					memread = '0;
 					memwrite = '0;
+					pc_write = 1'b1;
 					pc_sel = PC_4; // pc + 4
 				end	
 			end	
@@ -66,6 +49,7 @@ module control_unit(
 					alucontrol = ALU_SUB;
 					imm_type = IMM_B;
 					pc_sel = PC_IMM; //Use imm to count  PC +  imm
+					pc_write = 1'b1;
 					memread = 1'b0;
 					memwrite = 1'b0;
 				end
@@ -77,6 +61,7 @@ module control_unit(
 					alucontrol = ALU_ADD;
 					imm_type = IMM_NF;
 					pc_sel = PC_4; //Use   PC +  4
+					pc_write = 1'b1;
 					memread = 1'b0;
 					memwrite = 1'b0; 
 			     end else if (funct_3 == 3'b000 && funct_7 == 7'b0100000) begin 
@@ -85,6 +70,7 @@ module control_unit(
 					alucontrol = ALU_SUB;
 					imm_type = IMM_NF;
 					pc_sel= PC_4; //Use   PC +  4
+					pc_write = 1'b1;
 					memread = 1'b0;
 					memwrite = 1'b0;        
 			     end
@@ -98,6 +84,7 @@ module control_unit(
 				alucontrol = ALU_ADD;
 				imm_type = IMM_NF;
 				pc_sel= '1;  
+				pc_write = 1'b0;
 			end	
 		endcase
 	end
