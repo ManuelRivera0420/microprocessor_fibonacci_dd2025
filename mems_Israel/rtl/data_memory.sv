@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module Data_Memory #(
     parameter DATA_WIDTH = 32,      // Ancho de instruccion / dato
     parameter ADDR_WIDTH = 32,      // Ancho de dirección del PC
