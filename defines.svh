@@ -15,3 +15,5 @@ localparam IMM_NF = 3'b101; //No function
 //define the PC count logic instructions 
 localparam PC_4 = 2'b00;	//Add pc + 4
 localparam PC_IMM = 2'b01; 	//Add pc + imm(value)
+
+//just a prove to see if everything is well done in push
