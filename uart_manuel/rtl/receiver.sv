@@ -29,7 +29,7 @@ logic [4:0] oversampling_count_next;
 logic [DATA_WIDTH - 1 : 0] data_out_reg;
 logic [DATA_WIDTH - 1 : 0] data_out_reg_next;
 
-typedef enum {IDLE = 3'b000, START = 3'b001, DATA = 3'b010, STOP = 3'b011} state_type;
+typedef enum logic [2:0] {IDLE = 3'b000, START = 3'b001, DATA = 3'b010, STOP = 3'b011} state_type;
 
 state_type state_reg, state_next;
 
@@ -63,7 +63,7 @@ always_comb begin
         START: begin
             enable = 1'b1;
             if(tick) begin
-                if(oversampling_count == HALFBIT_SAMPLING) begin
+                if(oversampling_count == BIT_SAMPLING) begin
                     state_next = DATA;
                     oversampling_count_next = '0;
                 end else begin
