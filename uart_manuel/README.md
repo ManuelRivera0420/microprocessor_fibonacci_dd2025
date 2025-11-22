@@ -1,1 +1,1 @@
-![diagrama](communication_diagram.png)
+![diagrama](communication_diagram.jpg)
