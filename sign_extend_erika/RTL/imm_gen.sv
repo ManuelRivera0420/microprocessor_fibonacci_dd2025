@@ -12,7 +12,7 @@
 
 module imm_gen(
     input logic [31:0] instr,
-    input [2:0] imm_sel,
+    input logic [2:0] imm_sel,
     output logic [31:0] imm_out
     );
     //local params
@@ -31,15 +31,15 @@ always_comb begin
                             31     30:25    24:20   19:15   14:12   11:8       7      6:0
                           imm[12] imm[10:5]  rs2    rs1   funct3   imm[4:1] imm[11]  opcode
 
-				*/
-		IMM_B: begin 
+			*/
+        IMM_B: begin 
             imm_out = { {20{instr[31]}}, {instr[7], instr[30:25], instr[11:8], 1'b0 } };
         end
         /*
                           31       30:21     20     19:12    11:7    6:0
                         imm[20] imm[10:1] imm[11] imm[19:12]  rd   opcode
         */
-        IMM_B: begin 
+        IMM_J: begin 
             imm_out = { {20{instr[31]}}, {instr[19:12], instr[20], instr[30:21], 1'b0 } };
         end
     endcase
