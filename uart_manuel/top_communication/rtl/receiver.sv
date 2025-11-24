@@ -1,22 +1,21 @@
+
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
-// Engineer: 
+// Engineer: Manuel Enrique Rivera Acosta
 // 
 // Create Date: 10/28/2025 11:54:10 AM
 // Design Name: 
 // Module Name: receiver
-// Project Name: 
 //////////////////////////////////////////////////////////////////////////////////
 
 module receiver #(parameter DATA_WIDTH = 8)(
 input logic clk,
 input logic arst_n,
-input logic tick,
-input logic rx,
-output logic rx_done,
-output logic enable,
-output logic [DATA_WIDTH - 1 : 0] data_out
+input logic tick, // TICK COMING FROM THE BAUD RATE GENERATOR
+input logic rx, // INPUT SERIAL COMING FROM THE TRANSMITTER TX
+output logic rx_done, // DONE SIGNAL TO INDICATE THAT THE BYTE HAS BEEN RECEIVED
+output logic [DATA_WIDTH - 1 : 0] data_out // OUPUT SIGNAL FOR THE BYTE RECEIVED
 );
 
 localparam BIT_SAMPLING = 15;
@@ -47,7 +46,6 @@ end
 always_comb begin
     case(state_reg)
         IDLE: begin
-            enable = 1'b0;
             rx_done = 1'b0;
             oversampling_count_next = '0;
             nbits_next = '0;
@@ -55,13 +53,11 @@ always_comb begin
                 oversampling_count_next = '0;
                 state_next = START;
                 data_out_reg_next = '0;
-                enable = 1'b1;
             end else begin
                 state_next = IDLE;
             end 
         end
         START: begin
-            enable = 1'b1;
             if(tick) begin
                 if(oversampling_count == BIT_SAMPLING) begin
                     state_next = DATA;
@@ -75,10 +71,8 @@ always_comb begin
             end
         end
         DATA: begin
-            enable = 1'b1;
             if(tick) begin
                 if(oversampling_count == BIT_SAMPLING ) begin 
-                    data_out_reg_next = {rx, data_out_reg[DATA_WIDTH - 1 : 1]};
                     oversampling_count_next = '0;
                     if(nbits == (DATA_WIDTH - 1)) begin
                         state_next = STOP;
@@ -86,13 +80,15 @@ always_comb begin
                         nbits_next = nbits + 1;
                     end
                 end else begin
+                    if(oversampling_count == HALFBIT_SAMPLING) begin
+                        data_out_reg_next = {rx, data_out_reg[DATA_WIDTH - 1 : 1]};
+                    end
                     oversampling_count_next = oversampling_count + 1;
                     state_next = DATA;                    
                 end
             end
         end
         STOP: begin
-            enable = 1'b1;
             if(tick) begin
                 if(oversampling_count == BIT_SAMPLING) begin
                     rx_done = 1'b1;
