@@ -73,7 +73,6 @@ always_comb begin
         DATA: begin
             if(tick) begin
                 if(oversampling_count == BIT_SAMPLING ) begin 
-                    data_out_reg_next = {rx, data_out_reg[DATA_WIDTH - 1 : 1]};
                     oversampling_count_next = '0;
                     if(nbits == (DATA_WIDTH - 1)) begin
                         state_next = STOP;
@@ -81,6 +80,9 @@ always_comb begin
                         nbits_next = nbits + 1;
                     end
                 end else begin
+                    if(oversampling_count == HALFBIT_SAMPLING) begin
+                        data_out_reg_next = {rx, data_out_reg[DATA_WIDTH - 1 : 1]};
+                    end
                     oversampling_count_next = oversampling_count + 1;
                     state_next = DATA;                    
                 end
