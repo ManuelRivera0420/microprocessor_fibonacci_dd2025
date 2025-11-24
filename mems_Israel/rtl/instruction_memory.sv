@@ -1,9 +1,9 @@
 `timescale 1ns / 1ps
 module instruction_memory #(
-    parameter DATA_WIDTH = 32,      // Ancho de instruccion 
-    parameter ADDR_WIDTH = 32,      // Ancho de dirección del PC
+    parameter DATA_WIDTH = 32,      // Ancho de instruccion (La instrucción completa mide 32 bits)
+    parameter ADDR_WIDTH = 32,      // Ancho de dirección del PC (El PC maneja direcciones de 32 bits)
     parameter BYTE_WIDTH = 8,       // Ancho de cajón de la memoria (1 Byte)
-    parameter MEM_DEPTH  = 256      // Numero de renglones de memoria
+    parameter MEM_DEPTH  = 1024      // Numero de renglones de memoria
 )
 (
     input logic clk,
@@ -14,11 +14,11 @@ module instruction_memory #(
     
     // Puerto de escritura (FIFO)
     input logic [DATA_WIDTH-1:0] data_in,   // Dato (instruccion) que viene de la FIFO
-    input logic [BYTE_WIDTH-1:0]            dir,       // Dirección (8 bits para 256 espacios)
+    input logic [9:0] dir,                  // Dirección (10 bits para 1024 espacios)
     input logic                  we         // Write Enable
 );
 
-    // Memoria de 1 byte y 256 renglones
+    // Memoria de 1 byte y 1024 renglones
     logic [BYTE_WIDTH-1:0] mem [0:MEM_DEPTH-1];
 
     // 1. Inicialización (limpieza)
@@ -39,6 +39,8 @@ module instruction_memory #(
     end
 
     // 3. Lectura (Combinacional)
-    assign rd = mem[a[DATA_WIDTH-1:2]];         // PC lee el programa
+    // Se concatena 4 bytes para construir la instruccion de 32bits
+    // [9:0] para poder leer hasta 1024 renglones
+    assign rd = {mem[a[9:0]], mem[a[9:0]+1], mem[a[9:0]+2], mem[a[9:0]+3]};         // PC lee el programa
 
 endmodule
