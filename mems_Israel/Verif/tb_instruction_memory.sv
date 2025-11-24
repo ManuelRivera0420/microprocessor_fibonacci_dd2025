@@ -59,6 +59,11 @@ module tb_instruction_memory();
             a = i * 4; // El PC pide dirección 0, 4, 8...
             rd = instr_mem[i];
             #20;
+            if (rd == instr_mem[i]) begin // Compara datos de lista de instrucciones con dato leido
+                $display("OK - Direccion %0d == Leido: %h (CORRECTO)", a, rd);
+            end else begin
+                $display("ERROR - Direccion %0d == Leido: %h (ESPERABA: %h)", a, rd, instr_mem[i]);
+            end
         end
         #5;
         $finish;
