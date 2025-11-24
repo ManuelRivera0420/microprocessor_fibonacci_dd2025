@@ -13,12 +13,13 @@ module program_counter(
     input logic clk,
     input logic arst_n,
     input logic pc_write,
+    input logic zero,
     input logic [1:0] pc_sel,
     input logic [31:0] imm_in,
     output logic [31:0] pc
 );
 
-`include "../../defines.svh"
+`include "defines.svh"
 
     
     //Secuential logic 
@@ -30,8 +31,12 @@ module program_counter(
                 PC_4: begin 
                     pc <= pc + 4;        
                 end
-                PC_IMM: begin
-                    pc <= pc + imm_in;
+                PC_BRANCH: begin
+                    if (zero) begin  //if branch taken
+                        pc <= pc + imm_in; 
+                    end else begin 
+                        pc <= pc + 4;
+                    end
                 end 
                 default: begin 
                     pc <= pc;

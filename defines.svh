@@ -1,3 +1,5 @@
+
+
 localparam OPCODE_R_TYPE = 7'b0110011;	//Type R-Instruction
 localparam OPCODE_I_TYPE = 7'b0010011;	//Type I-Instruction
 localparam OPCODE_B_TYPE = 7'b1100011;	//Type B-Instruction
@@ -14,6 +16,7 @@ localparam IMM_J = 3'b100;   // Type J  (JAL)
 localparam IMM_NF = 3'b101; //No function 
 //define the PC count logic instructions 
 localparam PC_4 = 2'b00;	//Add pc + 4
-localparam PC_IMM = 2'b01; 	//Add pc + imm(value)
+localparam PC_BRANCH = 2'b01; 	//Add pc + imm(value)
+localparam PC_JAL = 2'b10;
 
 //just a prove to see if everything is well done in push

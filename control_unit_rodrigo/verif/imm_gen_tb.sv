@@ -26,12 +26,7 @@ module imm_gen_tb();
     logic [2:0] imm_sel;
     logic [31:0] imm_out;
         //local params
-    localparam IMM_I = 3'b000;   // Type I  (ADDI, LW, JALR, etc.)
-    localparam IMM_S = 3'b001;   // Type S  (SW, SH, SB)
-    localparam IMM_B = 3'b010;   // Type B  (BEQ, BNE, etc.)
-    localparam IMM_U = 3'b011;   // Type U  (LUI, AUIPC)
-    localparam IMM_J = 3'b100;   // Type J  (JAL)
-    localparam IMM_NF = 3'b101;
+`include "../../defines.svh"
     
     initial begin
         imm_sel = IMM_I;
