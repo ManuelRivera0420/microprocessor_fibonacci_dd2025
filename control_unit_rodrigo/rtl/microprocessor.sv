@@ -37,11 +37,17 @@ logic [DATA_WIDTH - 1:0] imm_out_to_mux;
 logic [4:0] instruction_rd_dir;
 logic [4:0] instruction_r1_dir;
 logic [4:0] instruction_r2_dir;
-
+////////////////////////////////
+/////instruction memory signals
+logic [DATA_WIDTH - 1:0] instruction_out;
 //instanciation of intruction memory/// 
 instruction_memory #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH), .BYTE_WIDTH(BYTE_WIDTH), .MEM_DEPTH(MEM_DEPTH)) instruction_memory_i (
-    .clk(clk)
-        
+    .clk(clk),
+    .data_in(instruction),
+    .rd_addr(pc_out), 
+    .rd_data(instruction_out),
+    .wr_aaddr('0),
+    .w_en(1'b0)
 );
 
 ///////////////////////////////////////
@@ -55,7 +61,7 @@ bank_reg_s #(.DIR_WIDTH(DIR_WIDTH), .DATA_WIDTH(DATA_WIDTH)) prf_i (
     .write_dir(uc_rd_dir),
     .write_data(data_prf_in),
     .read_data1(alu_operand1),
-    .read_data2()
+    .read_data2(r2_to_mux)
 );
 
 //instanciation of ALU
@@ -64,7 +70,7 @@ alu #(.N(DATA_WIDTH)) alu_i(
     .operand2(mux_to_alu_operand2),
     .alucontrol(alucontrol),
     .zero(zero),
-    .alu_result()
+    .alu_result('0)
 );
 
 //instanciatioon of PC
@@ -80,7 +86,7 @@ program_counter pc_i (
 );
 //instanciation of immgen
 imm_gen imm_gen_i (
-    .instr(instruction),
+    .instr(instruction_out),
     .imm_sel(imm_sel),
     .imm_out(imm_out_to_mux)
 );
@@ -97,9 +103,9 @@ mux #(.WIDTH(32)) mux_imm_gen_i(
 
 //instanciation of ocntrol unit 
 control_unit control_unit_i (
-    .opcode   (instruction[6:0]),
-    .funct_7  (instruction[31:25]),
-    .funct_3  (instruction[14:12]),
+    .opcode   (instruction_out[6:0]),
+    .funct_7  (instruction_out[31:25]),
+    .funct_3  (instruction_out[14:12]),
     //inputs and outputs for prf////////////////////
     .regwrite (uc_reg_write),
     .rd_in(instruction_rd_dir),
@@ -109,14 +115,14 @@ control_unit control_unit_i (
     .r1_out(uc_r1_dir),
     .r2_out(uc_r2_dir),
     ///////////////////////////////////////////////
-    .memread  (),
-    .memwrite (),
-    .memtoreg (),
+    .memread  ('0),
+    .memwrite ('0),
+    .memtoreg ('0),
     ///////////////////////////////////////////////
 	//inputs and outputs for PC////////////
-    .pc_write (),
-    .pc_sel   (),
-    .imm_type (),
+    .pc_write (pc_write),
+    .pc_sel   (pc_sel),
+    .imm_type (imm_sel),
     //inputs for ALU
     .alusrc_r1 (sel_r1),
     .alusrc_r2 (sel_r2),
@@ -124,4 +130,5 @@ control_unit control_unit_i (
 );
 
 endmodule
+
 
