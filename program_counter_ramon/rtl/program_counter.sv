@@ -13,13 +13,14 @@ module program_counter(
     input logic clk,
     input logic arst_n,
     input logic pc_write,
+    input logic zero,
     input logic [1:0] pc_sel,
     input logic [31:0] imm_in,
     output logic [31:0] pc
 );
-    //define the PC count logic instructions 
-    localparam PC_4 = 2'b00;
-    localparam PC_IMM = 2'b01; 
+
+`include "defines.svh"
+
     
     //Secuential logic 
     always_ff @(posedge clk, negedge arst_n) begin
@@ -30,8 +31,12 @@ module program_counter(
                 PC_4: begin 
                     pc <= pc + 4;        
                 end
-                PC_IMM: begin
-                    pc <= pc + imm_in;
+                PC_BRANCH: begin
+                    if (zero) begin  //if branch taken
+                        pc <= pc + imm_in; 
+                    end else begin 
+                        pc <= pc + 4;
+                    end
                 end 
                 default: begin 
                     pc <= pc;
@@ -39,6 +44,6 @@ module program_counter(
             endcase
         end 
     end    
-    
 endmodule
+
 
