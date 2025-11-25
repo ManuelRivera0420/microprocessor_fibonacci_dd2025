@@ -12,11 +12,11 @@
 module program_counter(
     input logic clk,
     input logic arst_n,
-    input logic pc_write,
-    input logic zero,
-    input logic [1:0] pc_sel,
-    input logic [31:0] imm_in,
-    output logic [31:0] pc
+    input logic pc_write,//Enable program counter
+    input logic zero,  //Sign send by the rs1-rs2 alu 
+    input logic [1:0] pc_sel,//Selection of variable to add type branch, Jal or +4 
+    input logic [31:0] imm_in,//Immediate
+    output logic [31:0] pc//Out of program counter
 );
 
 `include "defines.svh"
