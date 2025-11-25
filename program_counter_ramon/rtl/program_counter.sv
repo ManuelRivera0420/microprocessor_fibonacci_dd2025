@@ -12,7 +12,7 @@
 module program_counter(
     input logic clk,
     input logic arst_n,
-    input logic pc_write,
+    input logic pc_write,//Enable program counter
     input logic zero,  //Sign send by the rs1-rs2 alu 
     input logic [1:0] pc_sel,//Selection of variable to add type branch, Jal or +4 
     input logic [31:0] imm_in,//Immediate
