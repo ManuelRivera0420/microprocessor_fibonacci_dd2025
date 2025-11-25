@@ -41,7 +41,7 @@ imm_gen imm_gen_i (
 );
 
 //instanciation of ALU
-alu #(.DATA_WIDTH(DATA_WIDTH)) alu_i(
+alu #(.N(DATA_WIDTH)) alu_i(
     .reg_source1(),
     .reg_source2(),
     .alucontrol(),
@@ -67,7 +67,7 @@ control_unit control_unit_i (
     .memwrite (),
     .memtoreg (),
     .alusrc_r1 (),
-    .alusrc_r3 (),
+    .alusrc_r2 (),
     .pc_write (),
     .pc_sel   (),
     .imm_type (),

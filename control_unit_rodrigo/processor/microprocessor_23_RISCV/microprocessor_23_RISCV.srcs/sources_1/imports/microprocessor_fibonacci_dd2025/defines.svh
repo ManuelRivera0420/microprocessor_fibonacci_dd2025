@@ -1,7 +1,6 @@
 parameter DATA_WIDTH = 32;
 parameter DIR_WIDTH = 5;
 
-
 localparam OPCODE_R_TYPE = 7'b0110011;	//Type R-Instruction
 localparam OPCODE_I_TYPE = 7'b0010011;	//Type I-Instruction
 localparam OPCODE_B_TYPE = 7'b1100011;	//Type B-Instruction
