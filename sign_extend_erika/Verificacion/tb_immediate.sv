@@ -22,44 +22,58 @@
 module tb_immediate();
 
     logic [31:0] instr;        // Input:Instructions from program memory
-    bit          imm_sel;      // Input:  0 = Instruction type I, 1 = Instruction type S of control unit
-    logic [31:0] imm32;        // Output for instruction type I and S
-    logic [31:0] imm32_branch; // Output for instruction type B
-    logic [31:0] expected_i;   // expected Output for instruction type I 
-    logic [31:0] expected_s;   // expected Output for instruction type s
-    logic [31:0] expected_b;   // expected Output for instruction type B
+    logic [2:0]  imm_sel;      // 000 = I-type, 001 = S-type ,010 = B-type, 011 = U-type, 100 = J-type of control unit 
+    logic [31:0] imm_out;        // Output for instruction type I , S, B,U J
+    logic [31:0] expected;     // expected Output for instruction type I 
+
     // DUT
-    immediate_top dut (
+
+   imm_gen dut (
         .instr(instr),
         .imm_sel(imm_sel),
-        .imm32(imm32),
-        .imm32_branch(imm32_branch)
+        .imm_out(imm_out)
     );
 
     initial begin
         // -Case I-type 
-        imm_sel = 0;
+        imm_sel = 3'b000;
         instr = 32'b00000000000000000000010100010011; #10;
-        expected_i = { {20{instr[31]}}, instr[31:20] };
-        assert (imm32 === expected_i)
-            $display("MATCH | instr=%b imm32_branch=%h esperado=%h",  instr, imm32, expected_i);
-            else $error("I-type failed: instr=%b imm32=%h esperado=%h", instr, imm32, expected_i);
+        expected = { {20{instr[31]}}, instr[31:20] };
+        assert (imm_out === expected)
+            $display("MATCH I-type | instr=%b imm_out=%h esperado=%h",  instr, imm_out, expected);
+            else $error("I-type failed: instr=%b imm_out=%h esperado=%h", instr, imm_out, expected);
 
         // Case S-type
-        imm_sel = 1;
+        imm_sel = 3'b001;
         instr = 32'b00000000001000001010100000100011; #10;
-        expected_s = { {20{instr[31]}}, {instr[31:25], instr[11:7]} };
-        assert (imm32 === expected_s)
-            $display("MATCH | instr=%b imm32_branch=%h esperado=%h",  instr, imm32, expected_s);
-            else $error("S-type failed: instr=%b imm32=%h esperado=%h", instr, imm32, expected_s);
+        expected = { {20{instr[31]}}, {instr[31:25], instr[11:7]} };
+        assert (imm_out === expected)
+            $display("MATCH S-type | instr=%b imm_out=%h esperado=%h",  instr, imm_out, expected);
+            else $error("S-type failed: instr=%b imm_out=%h esperado=%h", instr, imm_out, expected);
 
         // Case B-type 
+        imm_sel = 3'b010;
         instr = 32'b11111110000001100001101011100011; #10;
-        expected_b = { {19{instr[31]}}, {instr[31], instr[7], instr[30:25], instr[11:8], 1'b0} };
-        assert (imm32_branch === expected_b)
-            $display("MATCH | instr=%b imm32_branch=%h esperado=%h",  instr, imm32, expected_b);
-            else $error("B-type failed: instr=%b imm32_branch=%h esperado=%h", instr, imm32_branch, expected_b);
+        expected = { {19{instr[31]}}, {instr[31], instr[7], instr[30:25], instr[11:8], 1'b0} };
+        assert (imm_out === expected)
+            $display("MATCH B-type | instr=%b imm_out=%h esperado=%h",  instr, imm_out, expected);
+            else $error("B-type failed: instr=%b imm_outh=%h esperado=%h", instr, imm_out, expected);
+            
+        // Case U-type 
+        imm_sel = 3'b011;
+        instr = 32'b00000000000010101011010100110111; #10;
+        expected = {  instr[31:12], {12{1'b0}} };
+        assert (imm_out === expected)
+            $display("MATCH U-type | instr=%b imm_out=%h esperado=%h",  instr, imm_out, expected);
+            else $error("U-type failed: instr=%b imm_out=%h esperado=%h", instr, imm_out, expected);
 
+        // Case J-type 
+        imm_sel = 3'b100;
+        instr = 32'b00000000100000000000000011101111; #10;
+        expected = { {12{instr[31]}}, {instr[19:12], instr[20], instr[30:21], 1'b0 } };
+        assert (imm_out === expected)
+            $display("MATCH B-type | instr=%b imm_out=%h esperado=%h",  instr, imm_out, expected);
+            else $error("B-type failed: instr=%b imm_out=%h esperado=%h", instr, imm_out, expected);
         $finish;
     end
 
