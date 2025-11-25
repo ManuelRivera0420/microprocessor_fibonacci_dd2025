@@ -102,7 +102,7 @@
       <File Path="$PSRCDIR/sources_1/imports/microprocessor_fibonacci_dd2025/alu_jaime/rtl/alu.sv">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../alu_jaime/rtl/alu.sv"/>
-          <Attr Name="ImportTime" Val="1764039605"/>
+          <Attr Name="ImportTime" Val="1764041749"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -135,6 +135,24 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PSRCDIR/sources_1/imports/mux/mux.sv">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../mux/mux.sv"/>
+          <Attr Name="ImportTime" Val="1764042059"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/microprocessor_fibonacci_dd2025/control_unit_rodrigo/rtl/program_counter.sv">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../rtl/program_counter.sv"/>
+          <Attr Name="ImportTime" Val="1763941685"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sources_1/imports/microprocessor_fibonacci_dd2025/control_unit_rodrigo/rtl/microprocessor.sv">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../rtl/microprocessor.sv"/>
@@ -144,11 +162,11 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/imports/microprocessor_fibonacci_dd2025/control_unit_rodrigo/rtl/program_counter.sv">
+      <File Path="$PSRCDIR/sources_1/imports/rtl/instruction_memory.sv">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../rtl/program_counter.sv"/>
-          <Attr Name="ImportTime" Val="1763941685"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../mems_Israel/rtl/instruction_memory.sv"/>
+          <Attr Name="ImportTime" Val="1764000218"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -157,7 +175,6 @@
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
         <Option Name="TopModule" Val="microprocessor"/>
-        <Option Name="TopAutoSet" Val="TRUE"/>
       </Config>
     </FileSet>
     <FileSet Name="constrs_1" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1" RelGenDir="$PGENDIR/constrs_1">
@@ -167,6 +184,7 @@
       </Config>
     </FileSet>
     <FileSet Name="sim_1" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/sim_1" RelGenDir="$PGENDIR/sim_1">
+      <Filter Type="Srcs"/>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
         <Option Name="TopModule" Val="microprocessor"/>
@@ -217,9 +235,7 @@
   <Runs Version="1" Minor="22">
     <Run Id="synth_1" Type="Ft3:Synth" SrcSet="sources_1" Part="xc7a200tfbg676-2" ConstrsSet="constrs_1" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="true" WriteIncrSynthDcp="false" State="current" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/synth_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2025">
-          <Desc>Vivado Synthesis Defaults</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2025"/>
         <Step Id="synth_design"/>
       </Strategy>
       <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2025"/>
@@ -228,9 +244,7 @@
     </Run>
     <Run Id="impl_1" Type="Ft2:EntireDesign" Part="xc7a200tfbg676-2" ConstrsSet="constrs_1" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" State="current" SynthRun="synth_1" IncludeInArchive="true" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/impl_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2025">
-          <Desc>Default settings for Implementation.</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2025"/>
         <Step Id="init_design"/>
         <Step Id="opt_design"/>
         <Step Id="power_opt_design"/>

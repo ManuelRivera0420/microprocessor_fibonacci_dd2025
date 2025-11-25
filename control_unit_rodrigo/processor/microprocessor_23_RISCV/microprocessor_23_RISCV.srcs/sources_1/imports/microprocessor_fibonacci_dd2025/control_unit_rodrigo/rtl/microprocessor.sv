@@ -1,7 +1,7 @@
 module microprocessor (
     input logic clk, 
     input logic arst_n,
-    input logic [31:0] instruction
+    input logic [DATA_WIDTH - 1:0] instruction
     	
 );
 
@@ -14,7 +14,25 @@ logic [4:0] uc_rd_dir;
 logic [4:0] uc_r1_dir;
 logic [4:0] uc_r2_dir;
 logic [DATA_WIDTH - 1: 0] data_prf_in;
+////signals for alu/////
+logic [DATA_WIDTH - 1: 0] r1_to_mux;
+logic [DATA_WIDTH - 1: 0] r2_to_mux;
+logic sel_r1;
+logic sel_r2;
+logic [DATA_WIDTH - 1: 0] alu_operand1;
+logic [DATA_WIDTH - 1: 0] mux_to_alu_operand2;
+logic [3:0] alucontrol;
 ////////////////////////////
+//signals for program counter/////
+logic pc_write;
+logic zero;
+logic [1:0] pc_sel; 
+logic [DATA_WIDTH - 1:0] pc_imm_in;
+logic [DATA_WIDTH - 1:0] pc_out;
+
+//signals for imm_gen 
+logic [2:0] imm_sel;
+logic [DATA_WIDTH - 1:0] imm_out_to_mux;
 //signals for control unit ////
 logic [4:0] instruction_rd_dir;
 logic [4:0] instruction_r1_dir;
@@ -29,25 +47,46 @@ bank_reg_s #(.DIR_WIDTH(DIR_WIDTH), .DATA_WIDTH(DATA_WIDTH)) prf_i (
     .read_dir2(uc_r2_dir),
     .write_dir(uc_rd_dir),
     .write_data(data_prf_in),
-    .read_data1(),
+    .read_data1(alu_operand1),
     .read_data2()
-);
-
-//instanciation of immgen
-imm_gen imm_gen_i (
-    .instr(instruction),
-    .imm_sel(),
-    .imm_out()
 );
 
 //instanciation of ALU
 alu #(.N(DATA_WIDTH)) alu_i(
-    .reg_source1(),
-    .reg_source2(),
-    .alucontrol(),
+    .operand1(alu_operand1),
+    .operand2(mux_to_alu_operand2),
+    .alucontrol(alucontrol),
     .zero(zero),
-    .reg_destiny()
+    .alu_result()
 );
+
+//instanciatioon of PC
+program_counter pc_i (
+    .clk(clk),
+    .arst_n(arst_n),
+    .pc_write(pc_write),
+    .zero(zero),
+    .pc_sel(pc_sel),
+    .pc_imm_in(pc_imm_in),
+    .pc(pc_out)
+
+);
+//instanciation of immgen
+imm_gen imm_gen_i (
+    .instr(instruction),
+    .imm_sel(imm_sel),
+    .imm_out(imm_out_to_mux)
+);
+
+//instanciation of mux imm_gen 
+
+mux #(.WIDTH(32)) mux_imm_gen_i(
+    .in1(imm_out_to_mux),
+    .in2(r2_to_mux),
+    .sel(sel_r2),
+    .out(mux_to_alu_operand2)
+);
+
 
 //instanciation of ocntrol unit 
 control_unit control_unit_i (
@@ -66,12 +105,14 @@ control_unit control_unit_i (
     .memread  (),
     .memwrite (),
     .memtoreg (),
-    .alusrc_r1 (),
-    .alusrc_r2 (),
+
     .pc_write (),
     .pc_sel   (),
     .imm_type (),
-    .alucontrol()
+    //inputs for ALU
+    .alusrc_r1 (sel_r1),
+    .alusrc_r2 (sel_r2),
+    .alucontrol(alucontrol)
 );
 
 endmodule
