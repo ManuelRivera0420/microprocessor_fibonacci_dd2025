@@ -15,7 +15,7 @@ module program_counter(
     input logic pc_write,
     input logic zero,
     input logic [1:0] pc_sel,
-    input logic [31:0] imm_in,
+    input logic [31:0] pc_imm_in,
     output logic [31:0] pc
 );
 
@@ -33,7 +33,7 @@ module program_counter(
                 end
                 PC_BRANCH: begin
                     if (zero) begin  //if branch taken
-                        pc <= pc + imm_in; 
+                        pc <= pc + pc_imm_in; 
                     end else begin 
                         pc <= pc + 4;
                     end
@@ -45,4 +45,5 @@ module program_counter(
         end 
     end    
 endmodule
+
 
