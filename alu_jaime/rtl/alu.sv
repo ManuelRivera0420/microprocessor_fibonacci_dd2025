@@ -4,9 +4,6 @@
  * TO DO:
  * Verify proper functionality with Control Unit
  * Remove operations that might be unused in the final design
- * THINGS TO CONSIDER:
- * Currently, repeated addition is unsuported because of the lack of carry-in input
- * and carry-out/overflow flag.
  */
 
 // ALU for basic arithmetic instructions in RV32I
@@ -22,7 +19,8 @@ module alu #(parameter N = 32)(
     output logic [N-1:0] reg_destiny    // ALU result, destiny is another register
     );
 
-`include "defines.svh"    
+`include "defines.svh"
+
 // internal signals
 //logic [N-1:0] first_operand;
 //logic [N-1:0] second_operand;
@@ -39,50 +37,53 @@ module alu #(parameter N = 32)(
             ALU_SUB: begin
                 reg_destiny = reg_source1 - reg_source2;
             end
-            /*ALU_AND: begin
-                reg_destiny = reg_source1 & second_operand;
+            ALU_AND: begin
+                reg_destiny = reg_source1 & reg_source2;
             end
             ALU_OR: begin
-                reg_destiny = reg_source1 | second_operand;
+                reg_destiny = reg_source1 | reg_source2;
             end
             ALU_XOR: begin
-                reg_destiny = reg_source1 ^ second_operand;
+                reg_destiny = reg_source1 ^ reg_source2;
             end
             ALU_EQ: begin
-                reg_destiny = reg_source1 == second_operand;
+                reg_destiny = reg_source1 == reg_source2;
             end
             ALU_SLT: begin  // Compare sign bit
-                if (reg_source1[N-1] != second_operand[N-1]) begin
+                if (reg_source1[N-1] != reg_source2[N-1]) begin
                     // Find which operand has the negative sign
-                    reg_destiny = reg_source1[N-1] > second_operand[N-1];
+                    reg_destiny = reg_source1[N-1] > reg_source2[N-1];
                 end else begin
                     // IF MSB is equal, compare bits directly
-                    reg_destiny = reg_source1[N-2:0] < second_operand[N-2:0];
+                    reg_destiny = reg_source1[N-2:0] < reg_source2[N-2:0];
                 end
             end
             ALU_SLTU: begin
-                reg_destiny = reg_source1 < second_operand;
+                reg_destiny = reg_source1 < reg_source2;
             end
             ALU_SLL: begin
-                reg_destiny = reg_source1 << second_operand;
+                reg_destiny = reg_source1 << reg_source2;
             end
             ALU_SRL: begin
-                reg_destiny = reg_source1 >> second_operand;
+                reg_destiny = reg_source1 >> reg_source2;
             end
             ALU_SRA: begin
-                // >>>: Arithmetic right shift preserves MSB
-                reg_destiny = reg_source1 >>> second_operand;
+                // >>>: Arithmetic right shift preserves MSB if data vector is signed
+                reg_destiny = $signed(reg_source1) >>> reg_source2; // Implementation could be hard-coded if needed
             end
-            // Send an undefined signal for non-specified OpCodes
-            default: reg_destiny = 'x;
-            */
+            // Send nothing as a default case
+            default: reg_destiny = '0;
         endcase
     end
     
+    assign zero = (reg_destiny == 0);
+    
+    // Implementation below generates a latch
+/*
     always_comb begin
         if (reg_destiny == 0) begin 
             zero = 1'b1;
         end
     end
+ */
 endmodule
-
