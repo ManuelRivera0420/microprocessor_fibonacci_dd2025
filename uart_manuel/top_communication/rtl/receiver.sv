@@ -72,13 +72,16 @@ always_comb begin
                     if(oversampling_count == HALFBIT_SAMPLING) begin
                         if(!rx) begin
                             start_bit_valid = 1'b1;
+                            state_next = START;
                         end else begin
                             start_bit_valid = 1'b0;
                             state_next = IDLE;
                         end
+                    end else begin
+                        state_next = START;
                     end
                     oversampling_count_next = oversampling_count + 1;
-                    state_next = START;
+                    //state_next = START;
                 end
             end else begin
                 state_next = START;

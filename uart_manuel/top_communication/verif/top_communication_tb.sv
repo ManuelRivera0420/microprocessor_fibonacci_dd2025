@@ -3,13 +3,17 @@
 module top_communication_tb();
 
 parameter DATA_WIDTH = 32;
-parameter INPUT_BYTE = 8;
+parameter BYTE_WIDTH = 8;
 
 bit clk;
 bit arst_n;
 logic [3:0] baud_sel;
 logic rx;
-logic [DATA_WIDTH - 1 : 0] data_out;
+logic [BYTE_WIDTH - 1 : 0] data_out;
+logic startbit_error;
+logic stopbit_error;
+logic [((BYTE_WIDTH / 4) * 7) - 1 : 0] display;
+logic prog_rdy;
 
 always #5ns clk = !clk;
 assign #30ns arst_n = 1'b1;
@@ -73,10 +77,10 @@ initial begin
     repeat(50) begin
         repeat(10) @(posedge clk);
         rx = 1'b0;
-        #90us;
+        #120us;
         repeat(8) begin
             std::randomize(rx);
-            #90us;
+            #120us;
         end
         rx = 1'b1;
     end
@@ -92,7 +96,11 @@ top_communication top_communication_i(
 .arst_n(arst_n),
 .rx(rx),
 .baud_sel(baud_sel),
-.data_out(data_out) 
+.data_out(data_out),
+.stopbit_error(stopbit_error),
+.startbit_error(startbit_error),
+.display(display),
+.prog_rdy(prog_rdy)
 );
 
 /*
