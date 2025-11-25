@@ -15,7 +15,9 @@ input logic arst_n,
 input logic tick, // TICK COMING FROM THE BAUD RATE GENERATOR
 input logic rx, // INPUT SERIAL COMING FROM THE TRANSMITTER TX
 output logic rx_done, // DONE SIGNAL TO INDICATE THAT THE BYTE HAS BEEN RECEIVED
-output logic [DATA_WIDTH - 1 : 0] data_out // OUPUT SIGNAL FOR THE BYTE RECEIVED
+output logic [DATA_WIDTH - 1 : 0] data_out, // OUPUT SIGNAL FOR THE BYTE RECEIVED
+output logic stopbit_error,
+output logic startbit_error
 );
 
 localparam BIT_SAMPLING = 15;
@@ -27,6 +29,7 @@ logic [4:0] oversampling_count;
 logic [4:0] oversampling_count_next;
 logic [DATA_WIDTH - 1 : 0] data_out_reg;
 logic [DATA_WIDTH - 1 : 0] data_out_reg_next;
+logic start_bit_valid;
 
 typedef enum logic [2:0] {IDLE = 3'b000, START = 3'b001, DATA = 3'b010, STOP = 3'b011} state_type;
 
@@ -46,6 +49,9 @@ end
 always_comb begin
     case(state_reg)
         IDLE: begin
+            startbit_error = 1'b0;
+            stopbit_error = 1'b0;
+            start_bit_valid = 1'b0;
             rx_done = 1'b0;
             oversampling_count_next = '0;
             nbits_next = '0;
@@ -63,8 +69,19 @@ always_comb begin
                     state_next = DATA;
                     oversampling_count_next = '0;
                 end else begin
+                    if(oversampling_count == HALFBIT_SAMPLING) begin
+                        if(!rx) begin
+                            start_bit_valid = 1'b1;
+                            state_next = START;
+                        end else begin
+                            start_bit_valid = 1'b0;
+                            state_next = IDLE;
+                        end
+                    end else begin
+                        state_next = START;
+                    end
                     oversampling_count_next = oversampling_count + 1;
-                    state_next = START;
+                    //state_next = START;
                 end
             end else begin
                 state_next = START;
@@ -90,12 +107,17 @@ always_comb begin
         end
         STOP: begin
             if(tick) begin
-                if(oversampling_count == BIT_SAMPLING) begin
-                    rx_done = 1'b1;
-                    state_next = IDLE;
+                if(rx) begin
+                    if(oversampling_count == BIT_SAMPLING) begin
+                        rx_done = 1'b1;
+                        state_next = IDLE;
+                    end else begin
+                        oversampling_count_next = oversampling_count + 1;
+                        state_next = STOP;
+                    end
                 end else begin
-                    oversampling_count_next = oversampling_count + 1;
-                    state_next = STOP;
+                    state_next = IDLE;
+                    stopbit_error = 1'b1;
                 end
             end else begin
                 state_next = STOP;
