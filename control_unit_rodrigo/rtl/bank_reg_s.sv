@@ -54,3 +54,4 @@ module bank_reg_s #(parameter DIR_WIDTH = 5, parameter DATA_WIDTH = 32)(
     end
     
 endmodule
+

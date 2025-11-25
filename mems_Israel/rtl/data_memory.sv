@@ -2,7 +2,7 @@
 module Data_Memory #(
     parameter DATA_WIDTH = 32,      // Ancho de instruccion / dato
     parameter ADDR_WIDTH = 32,      // Ancho de dirección del PC
-    parameter MEM_DEPTH  = 4        // Profundidad (4 renglones: 0,1,2,3)
+    parameter MEM_DEPTH  = 1024        // Profundidad (4 renglones: 0,1,2,3)
     )(
 
     input logic clk,
@@ -12,7 +12,7 @@ module Data_Memory #(
     output logic [DATA_WIDTH-1:0] rd      // Read Data (Dato de salida) de memoria de datos
 );
 
-    // Memoria de 32 bits y 4 renglones
+    // Memoria de 32 bits y 1024 renglones
     logic [DATA_WIDTH-1:0] ram [0:MEM_DEPTH-1]; 
 
     // Lectura debe de ser combinacional
@@ -21,7 +21,7 @@ module Data_Memory #(
     // 1. Inicialización (Limpieza)
     initial begin
         for (int i=0; i<MEM_DEPTH; i++) 
-            ram[i] = {DATA_WIDTH{1'b0}};
+            ram[i] = {DATA_WIDTH{1'b0}};    
     end
     
     // Escritura debe de ser secuencial
@@ -30,5 +30,7 @@ module Data_Memory #(
             ram[a[ADDR_WIDTH-1:2]] <= di;         //si WE es 1, se escribe en la ram el valor
         end
     end
+    
+    
 
 endmodule
