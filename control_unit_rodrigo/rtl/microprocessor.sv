@@ -6,7 +6,7 @@ module microprocessor (
 );
 
 //instanciation of prf
-bank_reg prf_i (
+bank_reg_s prf_i (
     .clk(clk),
     .arst_n(arst_n),
     .write_en(),
