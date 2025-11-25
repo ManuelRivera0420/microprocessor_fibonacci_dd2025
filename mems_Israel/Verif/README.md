@@ -1,1 +1,1 @@
-![Diagrama del Módulo de Memoria](Simulación.png)
+![Diagrama del Módulo de Memoria](img/Simulación.png)
