@@ -15,12 +15,8 @@ module imm_gen(
     input logic [2:0] imm_sel,
     output logic [31:0] imm_out
     );
-    //local params
-    localparam IMM_I = 3'b000;   // Type I  (ADDI, LW, JALR, etc.)
-    localparam IMM_S = 3'b001;   // Type S  (SW, SH, SB)
-    localparam IMM_B = 3'b010;   // Type B  (BEQ, BNE, etc.)
-    localparam IMM_U = 3'b011;   // Type U  (LUI, AUIPC)
-    localparam IMM_J = 3'b100;   // Type J  (JAL)
+    
+`include "defines.svh"
 
 always_comb begin 
     unique case (imm_sel)
@@ -46,4 +42,5 @@ always_comb begin
 end
 
 endmodule
+
 
