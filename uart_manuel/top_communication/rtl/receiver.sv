@@ -15,9 +15,7 @@ input logic arst_n,
 input logic tick, // TICK COMING FROM THE BAUD RATE GENERATOR
 input logic rx, // INPUT SERIAL COMING FROM THE TRANSMITTER TX
 output logic rx_done, // DONE SIGNAL TO INDICATE THAT THE BYTE HAS BEEN RECEIVED
-output logic [DATA_WIDTH - 1 : 0] data_out, // OUPUT SIGNAL FOR THE BYTE RECEIVED
-output logic stopbit_error,
-output logic startbit_error
+output logic [DATA_WIDTH - 1 : 0] data_out // OUPUT SIGNAL FOR THE BYTE RECEIVED
 );
 
 localparam BIT_SAMPLING = 15;
@@ -29,7 +27,7 @@ logic [4:0] oversampling_count;
 logic [4:0] oversampling_count_next;
 logic [DATA_WIDTH - 1 : 0] data_out_reg;
 logic [DATA_WIDTH - 1 : 0] data_out_reg_next;
-logic start_bit_valid;
+logic rx_done_next;
 
 typedef enum logic [2:0] {IDLE = 3'b000, START = 3'b001, DATA = 3'b010, STOP = 3'b011} state_type;
 
@@ -43,88 +41,77 @@ always_ff @(posedge clk or negedge arst_n) begin
         state_reg <= state_next;
         nbits <= nbits_next;
         data_out_reg <= data_out_reg_next;
+        rx_done <= rx_done_next;
     end
 end
 
 always_comb begin
+    oversampling_count_next = oversampling_count;
+    nbits_next              = nbits;
+    data_out_reg_next       = data_out_reg;
+    state_next              = state_reg;
+    rx_done_next = rx_done;
+
     case(state_reg)
         IDLE: begin
-            startbit_error = 1'b0;
-            stopbit_error = 1'b0;
-            start_bit_valid = 1'b0;
-            rx_done = 1'b0;
+            rx_done_next = 1'b0;
             oversampling_count_next = '0;
-            nbits_next = '0;
-            if(!rx) begin
-                oversampling_count_next = '0;
+            data_out_reg_next       = '0;
+            nbits_next              = '0;
+            if (!rx)
                 state_next = START;
-                data_out_reg_next = '0;
-            end else begin
-                state_next = IDLE;
-            end 
         end
+
         START: begin
-            if(tick) begin
-                if(oversampling_count == BIT_SAMPLING) begin
+            if (tick) begin
+                if (oversampling_count == BIT_SAMPLING) begin
+                    oversampling_count_next = '0;
+                    nbits_next = '0;
+                    data_out_reg_next = '0;
                     state_next = DATA;
-                    oversampling_count_next = '0;
                 end else begin
-                    if(oversampling_count == HALFBIT_SAMPLING) begin
-                        if(!rx) begin
-                            start_bit_valid = 1'b1;
-                            state_next = START;
-                        end else begin
-                            start_bit_valid = 1'b0;
-                            state_next = IDLE;
-                        end
-                    end else begin
-                        state_next = START;
-                    end
                     oversampling_count_next = oversampling_count + 1;
-                    //state_next = START;
+                    if (oversampling_count == HALFBIT_SAMPLING)
+                        state_next = (!rx) ? START : IDLE;
                 end
-            end else begin
-                state_next = START;
             end
         end
+
         DATA: begin
-            if(tick) begin
-                if(oversampling_count == BIT_SAMPLING ) begin 
+            if (tick) begin
+                if (oversampling_count == BIT_SAMPLING) begin
                     oversampling_count_next = '0;
-                    if(nbits == (DATA_WIDTH - 1)) begin
+                    if (nbits == (DATA_WIDTH - 1))
                         state_next = STOP;
-                    end else begin
+                    else
                         nbits_next = nbits + 1;
-                    end
                 end else begin
-                    if(oversampling_count == HALFBIT_SAMPLING) begin
-                        data_out_reg_next = {rx, data_out_reg[DATA_WIDTH - 1 : 1]};
-                    end
                     oversampling_count_next = oversampling_count + 1;
-                    state_next = DATA;                    
+                    if (oversampling_count == HALFBIT_SAMPLING)
+                        data_out_reg_next = {rx, data_out_reg[DATA_WIDTH-1:1]};
                 end
             end
         end
+
         STOP: begin
-            if(tick) begin
-                if(rx) begin
-                    if(oversampling_count == BIT_SAMPLING) begin
-                        rx_done = 1'b1;
+            if (tick) begin
+                if (rx) begin
+                    if (oversampling_count == BIT_SAMPLING) begin
+                        rx_done_next = 1'b1;
                         state_next = IDLE;
+                        oversampling_count_next = '0;
                     end else begin
                         oversampling_count_next = oversampling_count + 1;
-                        state_next = STOP;
                     end
                 end else begin
                     state_next = IDLE;
-                    stopbit_error = 1'b1;
+                    oversampling_count_next = '0;
                 end
-            end else begin
-                state_next = STOP;
             end
         end
     endcase
 end
+
 
 assign data_out = data_out_reg;
 
