@@ -7,7 +7,8 @@ module microprocessor_tb ();
 `define  BANK_REG_PATH microprocessor_i.prf_i
 `define  PC_PATH microprocessor_i.pc_i
 `define  IMM_GEN_PATH microprocessor_i.imm_gen_i
-`define  MUX_PATH microprocessor_i.mux_imm_gen_i
+`define  MUX_IMM_PATH microprocessor_i.mux_imm_gen_i
+`define  MUX_PC_PATH microprocessor_i.mux_pc_i
 `define  CU_PATH microprocessor_i.control_unit_i
 
 
