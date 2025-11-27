@@ -10,21 +10,21 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module transmitter #(parameter DATA_WIDTH = 8)(
+module transmitter #(parameter BYTE_WIDTH = 8)(
     input logic clk,
     input logic arst_n,
-    input logic [DATA_WIDTH - 1 : 0] data_in, // DATA_IN TO BE SENT TO THE RECEIVER MODULE BIT BY BIT THROUGH THE TX
+    input logic [BYTE_WIDTH - 1 : 0] data_in, // DATA_IN TO BE SENT TO THE RECEIVER MODULE BIT BY BIT THROUGH THE TX
     input logic tick, // TICK COMING FROM THE BAUD RATE GENERATOR
     input logic tx_start, // TX_START SIGNAL TO BEGIN THE BYTE TRANSMISSION
     output logic tx, // SERIAL OUTPUT BIT TO TRANSMIT INTO THE RECEIVER RX INPUT SIGNAL
     output logic tx_done // DONE SIGNAL INDICATING THAT THE BYTE HAS BEEN SENT
 );
 
-localparam BIT_SAMPLING = 16;
-localparam HALFBIT_SAMPLING = 8;
+localparam BIT_SAMPLING = 15;
+localparam HALFBIT_SAMPLING = 7;
 
-logic [DATA_WIDTH - 1 : 0] shifted_data;
-logic [DATA_WIDTH - 1 : 0] shifted_data_next;
+logic [BYTE_WIDTH - 1 : 0] shifted_data;
+logic [BYTE_WIDTH - 1 : 0] shifted_data_next;
 
 logic [4:0] nbits;
 logic [4:0] nbits_next;
@@ -48,9 +48,14 @@ always_ff @(posedge clk or negedge arst_n) begin
 end
 
 always_comb begin
+	state_next = state_reg;
+	nbits_next = nbits;
+	oversampling_count_next = oversampling_count;
+	shifted_data_next = shifted_data;
+	
     case(state_reg)
+	
         IDLE: begin
-            tx_done = 1'b0;
             nbits_next = '0;
             tx = 1'b1;
             if(tx_start) begin 
@@ -58,13 +63,12 @@ always_comb begin
                 shifted_data_next = data_in;
                 tx = 1'b0;
                 state_next = START;
-            end else begin
-                state_next = IDLE;
             end
         end
+		
         START: begin
             if(tick) begin
-                if(oversampling_count == BIT_SAMPLING - 1) begin
+                if(oversampling_count == BIT_SAMPLING) begin
                     oversampling_count_next = '0;
                     state_next = DATA;             
                 end else begin
@@ -72,10 +76,11 @@ always_comb begin
                 end
             end
         end
+		
         DATA: begin
             tx = shifted_data[0];
             if(tick) begin
-                if(oversampling_count == BIT_SAMPLING - 1) begin
+                if(oversampling_count == BIT_SAMPLING) begin
                     shifted_data_next = {1'b0, shifted_data[7:1]};
                     oversampling_count_next = '0;
                     if(nbits == DATA_WIDTH - 1) begin
@@ -84,26 +89,26 @@ always_comb begin
                         nbits_next = nbits + 1'b1;
                     end
                 end else begin
-                    state_next = DATA;
                     oversampling_count_next = oversampling_count + 1;
                 end
             end
         end
+		
         STOP: begin
             tx = 1'b1;
             if(tick) begin
-                if(oversampling_count == BIT_SAMPLING - 1) begin
-                    tx_done = 1'b1;
+                if(oversampling_count == BIT_SAMPLING) begin
                     state_next = IDLE;
                 end else begin
                     oversampling_count_next = oversampling_count + 1;
                     state_next = STOP;
                 end
-            end else begin
-                state_next = STOP;
             end
         end
+		
     endcase
 end
+
+assign tx_done = (state_reg == STOP) && (oversampling_count == BIT_SAMPLING);
 
 endmodule
