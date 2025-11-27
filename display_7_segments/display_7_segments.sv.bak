@@ -1,4 +1,4 @@
-module display_7_segments #(parameter DATA_WIDTH = 32)(
+module display_7_segments #(parameter DATA_WIDTH = 4)(
     input logic [DATA_WIDTH - 1 : 0] data_in,
     output logic [((DATA_WIDTH / 4) * 7) - 1 : 0] display
 );
@@ -28,12 +28,8 @@ function automatic [6:0] hex_nibbles (input [3:0] nibble);
 endfunction
 
 genvar i;
-generate
-    for(i = 0; i < ITERATIONS; i++) begin : gen_hex
-        assign display[((i + 1) * 7) - 1 : i * 7] =
-               hex_nibbles(data_in[((i + 1) * 4) - 1 : i * 4]);
-    end
-endgenerate
+for(i = 0; i < ITERATIONS; i++) begin : gen_segment_decoder
+    assign display[((i + 1) * 7) - 1 : i * 7] = hex_nibbles(data_in[((i + 1) * 4) - 1 : i * 4]);
+end
 
-
-endmodule 
+endmodule
