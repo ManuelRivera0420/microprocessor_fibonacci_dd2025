@@ -40,7 +40,7 @@ module control_unit(
 	
 );
 	//Define the instructions 
-`include "defines.svh"
+//`include "defines.svh"
     
 	always_comb begin 
 		unique case (opcode)

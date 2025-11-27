@@ -1,11 +1,14 @@
 module microprocessor (
     input logic clk, 
     input logic arst_n,
-    input logic [DATA_WIDTH - 1:0] instruction
-    	
+    input logic [DATA_WIDTH - 1:0] instruction,
+    output logic memread , //
+    output logic memwrite, //
+    output logic memtoreg, //
+		output logic [DATA_WIDTH - 1:0]alu_result // Temporay, set as ports to sinthetize
 );
 
-`include "defines.svh"
+//`include "defines.svh"
 
 //internal signals
 //signals for prf////////////
@@ -70,7 +73,7 @@ alu #(.N(DATA_WIDTH)) alu_i(
     .operand2(mux_to_alu_operand2),
     .alucontrol(alucontrol),
     .zero(zero),
-    .alu_result('0)
+    .alu_result(alu_result) // To synthetize
 );
 
 //instanciatioon of PC
@@ -103,9 +106,9 @@ mux #(.WIDTH(32)) mux_imm_gen_i(
 
 //instanciation of ocntrol unit 
 control_unit control_unit_i (
-    .opcode   (instruction_out[6:0]),
-    .funct_7  (instruction_out[31:25]),
-    .funct_3  (instruction_out[14:12]),
+    .opcode   (instruction[6:0]),
+    .funct_7  (instruction[31:25]),
+    .funct_3  (instruction[14:12]),
     //inputs and outputs for prf////////////////////
     .regwrite (uc_reg_write),
     .rd_in(instruction_rd_dir),
@@ -115,9 +118,9 @@ control_unit control_unit_i (
     .r1_out(uc_r1_dir),
     .r2_out(uc_r2_dir),
     ///////////////////////////////////////////////
-    .memread  ('0),
-    .memwrite ('0),
-    .memtoreg ('0),
+    .memread(memread), // To synthetize
+    .memwrite(memwrite),
+    .memtoreg(memtoreg),
     ///////////////////////////////////////////////
 	//inputs and outputs for PC////////////
     .pc_write (pc_write),

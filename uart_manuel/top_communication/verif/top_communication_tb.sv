@@ -9,10 +9,8 @@ bit clk;
 bit arst_n;
 logic [3:0] baud_sel;
 logic rx;
-logic [BYTE_WIDTH - 1 : 0] data_out;
-logic startbit_error;
-logic stopbit_error;
-logic [((BYTE_WIDTH / 4) * 7) - 1 : 0] display;
+logic [DATA_WIDTH - 1 : 0] data_out;
+logic [((DATA_WIDTH / 4) * 7) - 1 : 0] display;
 logic prog_rdy;
 
 always #5ns clk = !clk;
@@ -97,8 +95,6 @@ top_communication top_communication_i(
 .rx(rx),
 .baud_sel(baud_sel),
 .data_out(data_out),
-.stopbit_error(stopbit_error),
-.startbit_error(startbit_error),
 .display(display),
 .prog_rdy(prog_rdy)
 );
