@@ -22,7 +22,7 @@ logic [DATA_WIDTH - 1: 0] r1_to_mux;
 logic [DATA_WIDTH - 1: 0] r2_to_mux;
 logic sel_r1;
 logic sel_r2;
-logic [DATA_WIDTH - 1: 0] alu_operand1;
+logic [DATA_WIDTH - 1: 0] mux_to_alu_operand1;
 logic [DATA_WIDTH - 1: 0] mux_to_alu_operand2;
 logic [3:0] alucontrol;
 ////////////////////////////
@@ -31,7 +31,7 @@ logic pc_write;
 logic zero;
 logic [1:0] pc_sel; 
 logic [DATA_WIDTH - 1:0] pc_imm_in;
-logic [DATA_WIDTH - 1:0] pc_out;
+logic [DATA_WIDTH - 1:0] pc_out_to_mux;
 
 //signals for imm_gen 
 logic [2:0] imm_sel;
@@ -59,21 +59,21 @@ bank_reg_s #(.DIR_WIDTH(DIR_WIDTH), .DATA_WIDTH(DATA_WIDTH)) prf_i (
     .clk(clk),
     .arst_n(arst_n),
     .write_en(uc_reg_write_en),
-    .read_dir1(uc_r1_dir),
-    .read_dir2(uc_r2_dir),
-    .write_dir(uc_rd_dir),
+    .read_dir1(instruction[19:15]),
+    .read_dir2(instruction[24:20]),
+    .write_dir(instruction[11:7]),
     .write_data(data_prf_in),
-    .read_data1(alu_operand1),
+    .read_data1(r1_to_mux),
     .read_data2(r2_to_mux)
 );
 
 //instanciation of ALU
 alu #(.N(DATA_WIDTH)) alu_i(
-    .operand1(alu_operand1),
+    .operand1(mux_to_alu_operand1),
     .operand2(mux_to_alu_operand2),
     .alucontrol(alucontrol),
     .zero(zero),
-    .alu_result(alu_result) // To synthetize
+    .alu_result(data_prf_in) // To synthetize
 );
 
 //instanciatioon of PC
@@ -83,13 +83,24 @@ program_counter pc_i (
     .pc_write(pc_write),
     .zero(zero),
     .pc_sel(pc_sel),
-    .pc_imm_in(pc_imm_in),
-    .pc(pc_out)
+    .pc_imm_in(imm_out_to_mux),
+    .pc(pc_out_to_mux)
 
 );
+
+//instanciation of mux PC 
+
+mux #(.WIDTH(32)) mux_pc_i(
+    .in1(pc_out_to_mux),
+    .in2(r1_to_mux),
+    .sel(sel_r1),
+    .out(mux_to_alu_operand2)
+);
+
+
 //instanciation of immgen
 imm_gen imm_gen_i (
-    .instr(instruction_out),
+    .instr(instruction),
     .imm_sel(imm_sel),
     .imm_out(imm_out_to_mux)
 );
@@ -100,7 +111,7 @@ mux #(.WIDTH(32)) mux_imm_gen_i(
     .in1(imm_out_to_mux),
     .in2(r2_to_mux),
     .sel(sel_r2),
-    .out(mux_to_alu_operand2)
+    .out(mux_to_alu_operand1)
 );
 
 
@@ -109,19 +120,13 @@ control_unit control_unit_i (
     .opcode   (instruction[6:0]),
     .funct_7  (instruction[31:25]),
     .funct_3  (instruction[14:12]),
-    //inputs and outputs for prf////////////////////
-    .regwrite (uc_reg_write),
-    .rd_in(instruction_rd_dir),
-    .r1_in(instruction_r1_dir),
-    .r2_in(instruction_r2_dir),
-    .rd_out(uc_rd_dir),
-    .r1_out(uc_r1_dir),
-    .r2_out(uc_r2_dir),
     ///////////////////////////////////////////////
     .memread(memread), // To synthetize
     .memwrite(memwrite),
     .memtoreg(memtoreg),
     ///////////////////////////////////////////////
+    //inputs for PRF//////
+    .regwrite(uc_reg_write_en),
 	//inputs and outputs for PC////////////
     .pc_write (pc_write),
     .pc_sel   (pc_sel),
@@ -133,5 +138,6 @@ control_unit control_unit_i (
 );
 
 endmodule
+
 
 

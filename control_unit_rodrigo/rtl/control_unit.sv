@@ -16,12 +16,6 @@ module control_unit(
 	input logic [6:0] funct_7, //instructions [31:25]
 	//inputs and outputs for prf////////////////////
 	output logic regwrite,
-	input logic [4:0] rd_in,
-	input logic [4:0] r1_in,
-	input logic [4:0] r2_in,
-	output logic [4:0] rd_out,
-	output logic [4:0] r1_out,
-	output logic [4:0] r2_out,
 	///////////////////////////////////////////////
 	//inputs and outyups for out memory////////////
 	output logic memread,
@@ -67,11 +61,11 @@ module control_unit(
 					alusrc_r2 = 1'b0; //use rs2
 					alucontrol = ALU_SUB;
 					imm_type = IMM_B;
-					pc_sel = PC_BRANCH; //Use imm to count  PC +  imm
-					pc_write = 1'b1;
 					memread = 1'b0;
 					memwrite = 1'b0;
 					memtoreg = 1'b0;
+					pc_write = 1'b1;
+					pc_sel = PC_BRANCH; // pc + 4
 				end
 			end
 			 OPCODE_R_TYPE: begin 
@@ -82,11 +76,11 @@ module control_unit(
 					alusrc_r2 = 1'b0; //use rs2
 					alucontrol = ALU_ADD;
 					imm_type = IMM_NF;
-					pc_sel = PC_4; //Use   PC +  4
-					pc_write = 1'b1;
 					memread = 1'b0;
 					memwrite = 1'b0; 
 					memtoreg = 1'b0;
+					pc_write = 1'b1;
+					pc_sel = PC_4; // pc + 4
 				//SUB
 			     end else if (funct_3 == 3'b000 && funct_7 == 7'b0100000) begin 
   			        regwrite = 1'b1;
@@ -94,23 +88,24 @@ module control_unit(
 					alusrc_r2 = 1'b0; //use rs2
 					alucontrol = ALU_SUB;
 					imm_type = IMM_NF;
-					pc_sel= PC_4; //Use   PC +  4
-					pc_write = 1'b1;
 					memread = 1'b0;
 					memwrite = 1'b0;  
-					memtoreg = 1'b0;      
+					memtoreg = 1'b0; 
+					pc_write = 1'b1;
+					pc_sel = PC_4; // pc + 4     
 			     end
 			 end
 			 OPCODE_J_TYPE: begin
 			        regwrite = 1'b1;
-					alusrc_r1 = 1'b0; //use rs1
-					alusrc_r2 = 1'b0; //use rs2
-					alucontrol = ALU_SUB;
-					imm_type = IMM_NF;
-					pc_sel= PC_BRANCH; //Use   PC +  imm
-					pc_write = 1'b1;
+					alusrc_r1 = 1'b1; //use PC
+					alusrc_r2 = 1'b1; //use imm
+					alucontrol = ALU_ADD;
+					imm_type = IMM_J;
 					memread = 1'b0;
-					memwrite = 1'b0;      
+					memwrite = 1'b0;
+					memtoreg = 1'b0;  
+					pc_write = 1'b1;
+					pc_sel = PC_JAL; // pc + imm      
 			 end
 			//default NOP
 			default: begin
@@ -121,12 +116,15 @@ module control_unit(
 				alusrc_r2 = 1'b0; //use rs2
 				alucontrol = ALU_ADD;
 				imm_type = IMM_NF;
+				memtoreg = 1'b0;  
 				pc_sel= '1;  
 				pc_write = 1'b0;
-				memtoreg = 1'b0;    
+				  
 			end	
 		endcase
 	end
+
 endmodule
+
 
 
