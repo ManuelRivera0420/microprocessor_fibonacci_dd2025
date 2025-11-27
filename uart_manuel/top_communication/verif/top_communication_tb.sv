@@ -10,8 +10,7 @@ bit arst_n;
 logic [3:0] baud_sel;
 logic rx;
 logic [DATA_WIDTH - 1 : 0] data_out;
-logic [((DATA_WIDTH / 4) * 7) - 1 : 0] display;
-logic prog_rdy;
+logic program_done;
 
 always #5ns clk = !clk;
 assign #30ns arst_n = 1'b1;
@@ -97,8 +96,7 @@ top_communication top_communication_i(
 .rx(rx),
 .baud_sel(baud_sel),
 .data_out(data_out),
-.display(display),
-.prog_rdy(prog_rdy)
+.program_done(program_done)
 );
 
 /*
