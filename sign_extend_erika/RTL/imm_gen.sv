@@ -25,17 +25,17 @@ always_comb begin
                         31:20       19:15   14:12    11:7   6:0
                         imm[31:20]  rs1     funct3   rd     opcode
         */
-        IMM_I: begin 
+        IMM_I: begin //000 = I-type
             imm_out = {{20{instr[31]}}, instr[31:20]}; //signed extension (repeat 20 times the MSB)
         end
 
 
-        /*   S-type     original immediate 12 bits   instr[31:20]
+        /*   S-type     original immediate 12 bits   imm[11:5]  imm[4:0]
                         7  bits   5bits   5bits    3bits    5bits     7bits 
                         31:25     24:20   19:15    14:12    11:7      6:0 
                         imm[11:5] rs2     rs1      funct3   imm[4:0]  opcode
         */        
-		IMM_S: begin //S-type  original immediate 12 bits   imm[11:5]  imm[4:0]
+		IMM_S: begin //001 = S-type
             imm_out = { {20{instr[31]}},instr[31:25], instr[11:7] };//signed extension (repeat 20 times the MSB)
         end
         
@@ -44,7 +44,7 @@ always_comb begin
                       31      30:25     24:20   19:15    14:12    11:8      7        6:0 
                       imm[12] imm[10:5] rs2     rs1      funct3   imm[4:1]  imm[11]  opcode
         */  
-        IMM_B: begin  //B-type  original immediate 12 bits   instr[31:12]
+        IMM_B: begin  //010 = B-type
              imm_out = { {20{instr[31]}}, {instr[7], instr[30:25], instr[11:8], 1'b0 } };
         end
         
@@ -53,7 +53,7 @@ always_comb begin
                           31:12         11:7     6:0 
                           imm[31:12]    rd       opcode
         */         
-        IMM_U: begin  //U-type  original immediate 20 bits   
+        IMM_U: begin  // 011 = U-type
             imm_out = {  instr[31:12], {12{1'b0}} };
         end
         
@@ -62,9 +62,10 @@ always_comb begin
                         31      30:21      20       19:12      11:7      6:0 
                         imm[20] imm[10:1]  imm[11]  imm[19:12] rd        opcode
         */   
-        IMM_J: begin //J-type  original immediate 20 bits  
+        IMM_J: begin // 100 = J-type
             imm_out = { {12{instr[31]}}, {instr[19:12], instr[20], instr[30:21], 1'b0 } };
         end
+        default: imm_out = '0;
     endcase
 end
 
