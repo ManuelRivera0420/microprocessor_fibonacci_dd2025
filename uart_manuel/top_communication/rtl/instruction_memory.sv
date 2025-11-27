@@ -3,7 +3,7 @@ module instruction_memory #(
     parameter DATA_WIDTH = 32,      // Ancho de instruccion 
     parameter ADDR_WIDTH = 32,      // Ancho de dirección del PC
     parameter BYTE_WIDTH = 8,       // Ancho de cajón de la memoria (1 Byte)
-    parameter MEM_DEPTH  = 256      // Numero de renglones de memoria
+    parameter MEM_DEPTH  = 1024      // Numero de renglones de memoria
 )
 (
     input logic clk,

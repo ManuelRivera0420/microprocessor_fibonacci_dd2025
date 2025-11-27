@@ -33,7 +33,7 @@ module bank_reg_s #(parameter DIR_WIDTH = 5, parameter DATA_WIDTH = 32)(
     
     `include "../../defines.svh"
     
-    logic [DATA_WIDTH - 1:0] prf [0:DATA_WIDTH - 1];    //Physical Register File 32*32bits
+    logic [DATA_WIDTH - 1:0] prf [1:(2**DIR_WIDTH) - 1];    //Physical Register File 32*32bits
     
     always_ff@(posedge clk,negedge arst_n)begin 
     //registers <= '{default:'0};
@@ -42,15 +42,15 @@ module bank_reg_s #(parameter DIR_WIDTH = 5, parameter DATA_WIDTH = 32)(
                 prf [i]<= '0;
             end
         end else begin
-            if (write_en & (write_dir != 5'b00000))begin    //If write enable is set and the direction of write is not 0, then write memory array
+            if (write_en)begin    //If write enable is set and the direction of write is not 0, then write memory array
                 prf [write_dir] <= write_data;              //Memory array assignation
             end
         end
     end
     
     always_comb begin
-        read_data1 = read_dir1 == write_dir ? write_data : prf [read_dir1];      //Assignation of readed data 1 depending of read direction 1
-        read_data2 = read_dir2 == write_dir ? write_data : prf [read_dir2];      //Assignation of readed data 2 depending of read direction 2
+        read_data1 = read_dir1 == 5'b00000 ? '0 : prf [read_dir1];      //Assignation of readed data 1 depending of read direction 1
+        read_data2 = read_dir2 == 5'b00000 ? '0 : prf [read_dir2];      //Assignation of readed data 2 depending of read direction 2
     end
     
 endmodule
