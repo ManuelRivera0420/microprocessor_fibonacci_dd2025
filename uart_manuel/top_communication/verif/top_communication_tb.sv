@@ -75,12 +75,20 @@ initial begin
     repeat(50) begin
         repeat(10) @(posedge clk);
         rx = 1'b0;
+<<<<<<< Updated upstream
         #120us;
         repeat(8) begin
             std::randomize(rx);
             #120us;
+=======
+        #106us;
+        repeat(8) begin
+            std::randomize(rx);
+            #106us;
+>>>>>>> Stashed changes
         end
         rx = 1'b1;
+        #106us;
     end
 end
 
