@@ -8,80 +8,81 @@
 // Module Name: uart_top
 //////////////////////////////////////////////////////////////////////////////////
 
+`include "../defines.svh"
 
-module uart_top #(parameter DATA_WIDTH = 32, BYTE_WIDTH = 8)(
+module uart_top (
     input logic clk,
     input logic arst_n,
-	 input logic rx,
-    input logic [3:0] baud_sel,
-	 input logic [9:0] rdaddr,
-    output logic [DATA_WIDTH - 1 : 0] data_out,
+    input logic rx,
+    input logic [BAUD_SEL_SIZE - 1 : 0] baud_sel,
+    input logic [ADDR_WIDTH - 1 : 0] rdaddr,
+    output logic [2:0] state,
+    output logic prog_rdy,
     output logic rx_done,
-	 output logic [((DATA_WIDTH / 4) * 7) - 1 : 0] display,
-	 output logic [DATA_WIDTH - 1 : 0] read_data,
-	 output logic [2:0] state,
-	 output logic prog_rdy
+    output logic [DATA_WIDTH - 1 : 0] data_out,
+    output logic [((DATA_WIDTH / 4) * 7) - 1 : 0] display,
+    output logic [DATA_WIDTH - 1 : 0] read_data,
+    output logic tx,
+    output logic tx_done,
+    input logic tx_start
 );
 
 logic tick;
-logic [7:0] uart_byte;
-logic [9:0] uart_addr;
 logic inst_rdy;
+logic [BYTE_WIDTH - 1 : 0] uart_byte;
+logic [ADDR_WIDTH - 1 : 0] wr_addr;
 
-
-shift_register_fsm sf_i(
+shift_register_fsm #(.BYTE_WIDTH(BYTE_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) shift_register_fsm_i(
     .clk (clk),
     .arst_n (arst_n),
     .w_en (rx_done), // input write enable coming from uart rx_done
     .data_in (uart_byte), // data_in coming from uart data_out port
     .data_out (data_out), // data out to be written in the program memory after receiving 4 bytes from uart
-    .wr_addr (uart_addr), // write addres for the memory
+    .wr_addr (wr_addr), // write addres for the memory
     .inst_rdy (inst_rdy), // flag to indicate that a instruction is ready, this is the write enable for the memory
-	 .state (state),
+	.state (state),
     .prog_rdy (prog_rdy)  // flag to indicate that the program has been initialized into the memory
 );
 
-ram_s rm_i(
-    .clk (clk),
-    .wren (inst_rdy),
-    .wraddr (uart_addr),
-    .wrdata (data_out),
-    .rden (1'b1),
-    .rdaddr (rdaddr),
-    .rddata (read_data)
-    );
 
-
-baud_rate_generator baud_rate_generator_i(
+baud_rate_generator #(.CLK_FREQ(CLK_FREQ)) baud_rate_generator_i(
     .clk(clk),
     .arst_n(arst_n),
     .tick(tick),
     .baud_sel(baud_sel)
 );
-/*
-transmitter transmitter_i(
+
+transmitter #(.BYTE_WIDTH(BYTE_WIDTH)) transmitter_i(
    .clk(clk),
    .arst_n(arst_n),
-   .data_in(data_in),
+   .data_in(uart_byte),
    .tick(tick),
-   .tx_start(tx_start),
+   .tx_start(rx_done),
    .tx(tx),
    .tx_done(tx_done)
 );
- */
  
-display_7_segments #(.DATA_WIDTH(DATA_WIDTH)) dsp_i(
+display_7_segments #(.DATA_WIDTH(DATA_WIDTH)) display_7_segments_i(
     .data_in (read_data),
     .display (display)
 );
  
-receiver receiver_i(
+receiver #(.BYTE_WIDTH(BYTE_WIDTH)) receiver_i(
 .clk(clk),
 .arst_n(arst_n),
 .tick(tick),
 .rx(rx), // RX CONNECTED TO THE TX FROM THE TRANSMITTER MODULE
 .rx_done(rx_done),
 .data_out(uart_byte)
+);
+
+instruction_memory #(.BYTE_WIDTH(BYTE_WIDTH), .ADDR_WIDTH(ADDR_WIDTH), .MEM_DEPTH(MEM_DEPTH), .DATA_WIDTH(DATA_WIDTH)) instruction_memory_i(
+.clk(clk),
+.rd_addr(rdaddr),
+.rd_data(read_data),
+.data_in(data_out),
+.wr_addr(wr_addr),
+.w_en(inst_rdy)
 );
 
 

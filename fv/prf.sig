@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wavelist version="3">
+  <insertion-point-position>8</insertion-point-position>
+  <wave>
+    <expr>clk</expr>
+    <label/>
+    <radix/>
+  </wave>
+  <wave>
+    <expr>&lt;embedded&gt;::microprocessor.fv_microprocessor_i.uC_ast_add_instruction</expr>
+    <label/>
+    <radix/>
+  </wave>
+  <wave collapsed="true">
+    <expr>fv_microprocessor_i.instruction[6:0]</expr>
+    <label/>
+    <radix>hex</radix>
+  </wave>
+  <wave collapsed="true">
+    <expr>fv_microprocessor_i.rd</expr>
+    <label/>
+    <radix>dec</radix>
+  </wave>
+  <wave collapsed="true">
+    <expr>fv_microprocessor_i.rs1</expr>
+    <label/>
+    <radix>dec</radix>
+  </wave>
+  <wave collapsed="true">
+    <expr>fv_microprocessor_i.rs2</expr>
+    <label/>
+    <radix>dec</radix>
+  </wave>
+  <wave collapsed="true">
+    <expr>fv_microprocessor_i.imm</expr>
+    <label/>
+    <radix>signed dec</radix>
+    <wave>
+      <expr>fv_microprocessor_i.imm[11]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave>
+      <expr>fv_microprocessor_i.imm[10]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave>
+      <expr>fv_microprocessor_i.imm[9]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave>
+      <expr>fv_microprocessor_i.imm[8]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave>
+      <expr>fv_microprocessor_i.imm[7]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave>
+      <expr>fv_microprocessor_i.imm[6]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave>
+      <expr>fv_microprocessor_i.imm[5]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave>
+      <expr>fv_microprocessor_i.imm[4]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave>
+      <expr>fv_microprocessor_i.imm[3]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave>
+      <expr>fv_microprocessor_i.imm[2]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave>
+      <expr>fv_microprocessor_i.imm[1]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave>
+      <expr>fv_microprocessor_i.imm[0]</expr>
+      <label/>
+      <radix/>
+    </wave>
+  </wave>
+  <wave collapsed="true">
+    <expr>fv_microprocessor_i.imm_beq</expr>
+    <label/>
+    <radix>signed dec</radix>
+  </wave>
+  <wave collapsed="true">
+    <expr>fv_microprocessor_i.func3</expr>
+    <label/>
+    <radix/>
+  </wave>
+  <wave collapsed="true">
+    <expr>fv_microprocessor_i.func7</expr>
+    <label/>
+    <radix/>
+  </wave>
+  <group collapsed="false">
+    <expr>fv_microprocessor_i.prf</expr>
+    <label>fv_microprocessor_i.prf</label>
+    <radix/>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[1]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[2]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[3]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[4]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[5]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[6]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[7]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[8]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[9]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[10]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[11]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[12]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[13]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[14]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[15]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[16]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[17]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[18]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[19]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[20]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[21]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[22]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[23]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[24]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[25]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[26]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[27]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[28]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[29]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[30]</expr>
+      <label/>
+      <radix/>
+    </wave>
+    <wave collapsed="true">
+      <expr>fv_microprocessor_i.prf[31]</expr>
+      <label/>
+      <radix>signed dec</radix>
+    </wave>
+  </group>
+  <wave collapsed="true">
+    <expr>pc_i.pc</expr>
+    <label/>
+    <radix>signed dec</radix>
+  </wave>
+</wavelist>

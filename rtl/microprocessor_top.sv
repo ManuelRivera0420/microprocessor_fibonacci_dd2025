@@ -8,7 +8,7 @@ module microprocessor_top (
 		output logic [DATA_WIDTH - 1:0]alu_result // Temporay, set as ports to sinthetize
 );
 
-`include "defines.svh"
+//`include "defines.svh"
 
 //internal signals
 //signals for prf////////////

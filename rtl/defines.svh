@@ -2,9 +2,11 @@
 parameter DIR_WIDTH = 5;
 /////instruction memory
 parameter DATA_WIDTH = 32;      // Ancho de instruccion (La instrucción completa mide 32 bits)
-parameter ADDR_WIDTH = 32;      // Ancho de dirección del PC (El PC maneja direcciones de 32 bits)
+parameter ADDR_WIDTH = 10;      // Ancho de dirección del PC (El PC maneja direcciones de 32 bits)
 parameter BYTE_WIDTH = 8;      // Ancho de cajón de la memoria (1 Byte)
 parameter MEM_DEPTH  = 1024;      // Numero de renglones de memoria
+parameter CLK_FREQ = 50_000_000; // CLOCK FREQUENCY OF THE SYSTEM
+parameter BAUD_SEL_SIZE = 3;
   
 localparam OPCODE_R_TYPE = 7'b0110011;	//Type R-Instruction
 localparam OPCODE_I_TYPE = 7'b0010011;	//Type I-Instruction
