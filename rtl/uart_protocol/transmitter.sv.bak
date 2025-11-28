@@ -34,7 +34,7 @@ logic [4:0] oversampling_count_next;
 logic tx_done_next;
 logic tx_next;
 
-typedef enum logic [2:0] {IDLE = 3'b000, START = 3'b001, DATA = 3'b010, STOP = 3'b011} state_type;
+typedef enum {IDLE = 3'b000, START = 3'b001, DATA = 3'b010, STOP = 3'b011} state_type;
 
 state_type state_reg, state_next;
 

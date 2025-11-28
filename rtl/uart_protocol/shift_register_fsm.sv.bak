@@ -62,7 +62,7 @@ always_ff@(posedge clk or negedge arst_n) begin
 end
 
 always_comb begin
-    //prog_rdy = 1'b0; // flag for program initialized set to 0
+    prog_rdy = 1'b0; // flag for program initialized set to 0
     n_of_instructions_next = n_of_instructions; // default value
     state_next = state_reg; // default state for state_next
     instruction_counter_next = instruction_counter; // default value
@@ -127,7 +127,7 @@ always_comb begin
         DONE: begin // done state to set program ready flag to 1
             temp_data_out_next = {DATA_WIDTH{1'b0}};
 			instruction_counter_next = {ADDR_WIDTH{1'b0}};
-            state_next = DONE;
+            state_next = WAIT_PARAMS;
         end
         
     endcase

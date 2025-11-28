@@ -78,8 +78,8 @@ receiver #(.BYTE_WIDTH(BYTE_WIDTH)) receiver_i(
 
 instruction_memory #(.BYTE_WIDTH(BYTE_WIDTH), .ADDR_WIDTH(ADDR_WIDTH), .MEM_DEPTH(MEM_DEPTH), .DATA_WIDTH(DATA_WIDTH)) instruction_memory_i(
 .clk(clk),
-.rd_addr(rdaddr),
-.rd_data(read_data),
+.rd_addr(rd_addr),
+.rd_data(rd_data),
 .data_in(data_out),
 .wr_addr(wr_addr),
 .w_en(inst_rdy)
