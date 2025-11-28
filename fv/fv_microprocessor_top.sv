@@ -87,7 +87,6 @@ input logic [DATA_WIDTH-1:0] pc_imm
   //  pc_imm == 12'hFFF
   //)
 
-
 endmodule
 
 bind microprocessor_top fv_microprocessor_top fv_microprocessor_i (
