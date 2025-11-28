@@ -11,5 +11,7 @@
 
 # ============================ tb
 
+
+../verif/microprocessor_if.sv
 ../verif/microprocessor_tb.sv
 

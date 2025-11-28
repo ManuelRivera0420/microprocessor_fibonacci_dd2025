@@ -11,8 +11,8 @@ set FV_TOP [lindex $argv [expr {$sepIdx + 1}]]
 
 ### ----------------------------------
 
-set RTL_DIR "/home/disdig/microprocessor_fibonacci_dd2025/control_unit_rodrigo/rtl"
-set FV_DIR  "/home/disdig/microprocessor_fibonacci_dd2025/control_unit_rodrigo/fv"
+set RTL_DIR "/home/joc/piezo/microprocessor_fibonacci_dd2025/control_unit_rodrigo/rtl"
+set FV_DIR  "/home/joc/piezo/microprocessor_fibonacci_dd2025/control_unit_rodrigo/fv"
 
 foreach f {
   defines.svh
