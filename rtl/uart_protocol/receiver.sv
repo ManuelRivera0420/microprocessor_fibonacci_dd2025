@@ -26,6 +26,7 @@ logic [4:0] oversampling_count;
 logic [4:0] oversampling_count_next;
 logic [BYTE_WIDTH - 1 : 0] data_out_reg;
 logic [BYTE_WIDTH - 1 : 0] data_out_reg_next;
+logic rx_done_next;
 
 typedef enum logic [2:0] {IDLE = 3'b000, START = 3'b001, DATA = 3'b010, STOP = 3'b011} state_type;
 
@@ -39,6 +40,7 @@ always_ff @(posedge clk or negedge arst_n) begin
         state_reg <= state_next;
         nbits <= nbits_next;
         data_out_reg <= data_out_reg_next;
+        rx_done <= rx_done_next;
     end
 end
 
@@ -51,8 +53,9 @@ always_comb begin
 
     case(state_reg)
         IDLE: begin
+            rx_done_next = 1'b0;
             oversampling_count_next = '0;
-            data_out_reg_next       = '0;
+            data_out_reg_next       = data_out_reg;
             nbits_next              = '0;
             if (!rx) begin
                 state_next = START;
@@ -97,6 +100,7 @@ always_comb begin
             if (tick) begin
                 if (rx) begin
                     if (oversampling_count == BIT_SAMPLING) begin
+                        rx_done_next = 1'b1;
                         state_next = IDLE;
                         oversampling_count_next = '0;
                     end else begin
@@ -112,7 +116,6 @@ always_comb begin
     endcase
 end
 
-assign rx_done = (state_reg == STOP) && (oversampling_count == BIT_SAMPLING);
 assign data_out = data_out_reg;
 
 endmodule

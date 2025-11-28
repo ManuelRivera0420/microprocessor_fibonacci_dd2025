@@ -9,11 +9,11 @@
 // Project Name: 
 //////////////////////////////////////////////////////////////////////////////////
 
-module shift_register_fsm#(parameter DATA_WIDTH = 32, parameter INPUT_BYTE = 8, parameter ADDR_WIDTH = 10)(
+module shift_register_fsm#(parameter DATA_WIDTH = 32, parameter BYTE_WIDTH = 8, parameter ADDR_WIDTH = 10)(
     input logic clk,
     input logic arst_n,
     input logic w_en, // input write enable coming from uart rx_done
-    input logic [INPUT_BYTE - 1 : 0] data_in, // data_in coming from uart data_out port
+    input logic [BYTE_WIDTH - 1 : 0] data_in, // data_in coming from uart data_out port
     output logic [DATA_WIDTH - 1 : 0] data_out, // data out to be written in the program memory after receiving 4 bytes from uart
     output logic [ADDR_WIDTH - 1 : 0] wr_addr, // write addres for the memory
     output logic inst_rdy, // flag to indicate that a instruction is ready, this is the write enable for the memory
@@ -22,8 +22,8 @@ module shift_register_fsm#(parameter DATA_WIDTH = 32, parameter INPUT_BYTE = 8, 
 );
 
 // internal counters 
-logic [INPUT_BYTE - 1 : 0] n_of_instructions;
-logic [INPUT_BYTE - 1 : 0] n_of_instructions_next;
+logic [BYTE_WIDTH - 1 : 0] n_of_instructions;
+logic [BYTE_WIDTH - 1 : 0] n_of_instructions_next;
 
 logic [ADDR_WIDTH - 1 : 0] instruction_counter;
 logic [ADDR_WIDTH - 1 : 0] instruction_counter_next;
@@ -31,7 +31,7 @@ logic [ADDR_WIDTH - 1 : 0] instruction_counter_next;
 logic [DATA_WIDTH - 1 : 0] temp_data_out;
 logic [DATA_WIDTH - 1 : 0] temp_data_out_next;
 
-logic [INPUT_BYTE - 1 : 0] received_byte;
+logic [BYTE_WIDTH - 1 : 0] received_byte;
 
 // states for the fsm
 typedef enum logic [2:0]{
