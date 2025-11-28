@@ -19,8 +19,8 @@ input logic [DATA_WIDTH-1:0] pc_imm
 	//`ASM(asm, instr_asm, 1'b1 |->,  instruction == 32'h0010_0133);
 	// 
 	logic [4:0] rs1, rs2, rd;
-	logic [2:0] func3;
-	logic [6:0] func7;
+	logic [2:0] funct3;
+	logic [6:0] funct7;
 	logic [31:0] tb_instr_add;
 	logic [31:0] tb_instr_addi;
 	logic [31:0] tb_instr_beq;
@@ -34,28 +34,38 @@ input logic [DATA_WIDTH-1:0] pc_imm
 	endclocking */
 
 
-	`ASM(asm, fields_stable, 1'b1 |->,  $stable({rs1,rs2,rd,func3,func7}));
-	`ASM(asm, instr, 1'b1 |->,  instruction == tb_instr_addi);
+	//`ASM(asm, fields_stable, 1'b1 |->,  $stable({rs1,rs2,rd,funct3,funct7}));
+	//`ASM(asm, fields_stable, 1'b1 |->,  $stable({funct7, rs2, rs1, funct3, rd, opcode}));
+
+	//`ASM(asm, instr, 1'b1 |->,  instruction == tb_instr_addi);
+//	`ASM(asm, instr, 1'b1 |->,  instruction == tb_instr_add);
+ // `ASM(asm, instr, 1'b1 |->,  instruction == tb_instr_beq);
+  `ASM(asm, instr, 1'b1 |->,  instruction == tb_instr_add);
+
+
+
+
 
 	`ASM(asm, no_x0, 1'b1 |->,  (|rs1) & (|rs2) & (|rd));
-	`ASM(asm, func3_always_0, 1'b1 |->,  ~(|func3));
+	`ASM(asm, funct3_always_0, 1'b1 |->,  ~(|funct3));
+	`ASM(asm, funct7_always_0, 1'b1 |->, ~(|funct7));  
 
-	`ASM(asm, add_only, 1'b1 |->,  opcode == OPCODE_R_TYPE[6:0]);
+//	`ASM(asm, add_only, 1'b1 |->,  opcode == OPCODE_R_TYPE[6:0]);
 //	`ASM(asm, addi_only, 1'b1 |->,  opcode == OPCODE_I_TYPE[6:0] );
 //	`ASM(asm, beq_only, 1'b1 |->,  opcode == OPCODE_B_TYPE[6:0] );
-//	`ASM(asm, jal_only, 1'b1 |->,  opcode == OPCODE_J_TYPE[6:0] );
+	`ASM(asm, jal_only, 1'b1 |->,  opcode == OPCODE_J_TYPE[6:0] );
 
-	assign tb_instr_add = {func7, rs2, rs1, func3, rd, opcode};
-	assign tb_instr_addi = {imm , rs1, func3, rd, opcode};
-	assign tb_instr_beq = {imm_beq[12], imm_beq[10:5], rs2, rs1, func3, imm_beq[4:1], imm_beq[11], opcode};
+	assign tb_instr_add = {funct7, rs2, rs1, funct3, rd, opcode};
+	assign tb_instr_addi = {imm , rs1, funct3, rd, opcode};
+	assign tb_instr_beq = {imm_beq[12], imm_beq[10:5], rs2, rs1, funct3, imm_beq[4:1], imm_beq[11], opcode};
 	assign tb_instr_jal = {imm_jal[20], imm_jal[10:1], imm_jal[11], imm_jal[19:12], rd, opcode};
 
 	
 
   // add instruction (add x2, x0, x1) -- failed
   `AST(uC, add_instruction,
-    instruction[6:0] == OPCODE_R_TYPE[6:0] |=>,
-    prf[rd] == $past(prf[rs1]) + $past(prf[rs2])
+    instruction[6:0] == OPCODE_R_TYPE[6:0] |-> ,
+    alu_i.alu_result == (prf_i.read_data1) + (prf_i.read_data2)
   )
 
   // addi instruction (addi rd, rs1)
@@ -68,14 +78,14 @@ input logic [DATA_WIDTH-1:0] pc_imm
   `AST(uC, beq_instruction,
     instruction[6:0] == OPCODE_B_TYPE[6:0] |=>, 
 		$past(prf[rs1] == prf[rs2]) ? 
-		 pc_i.pc == (pc_i.pc) + (imm_beq) : // branch taken
-		 pc_i.pc == (pc_i.pc) + 32'd4 // branch not taken
+		 pc_i.pc == $past(pc_i.pc) + $past(imm_gen_i.imm_out) : // branch taken
+		 pc_i.pc == $past(pc_i.pc) + 32'd4 // branch not taken
 )
 
   // jal -- failed
   `AST(uC, jal_instruction,
     instruction[6:0] == OPCODE_J_TYPE[6:0] |=>, 
-		pc_i.pc == $past(pc_i.pc + imm_jal) // unconditional jump
+		pc_i.pc == $past(pc_i.pc + imm_gen_i.imm_out) // unconditional jump
 )
 
   //// sub instruction (sub x2, x0, x1)

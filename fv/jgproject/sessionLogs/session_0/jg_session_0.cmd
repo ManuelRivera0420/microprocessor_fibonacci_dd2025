@@ -5,10 +5,10 @@
 # version   : 2023.09 FCS 64 bits
 # build date: 2023.09.27 19:40:18 UTC
 # ----------------------------------------
-# started   : 2025-11-28 19:50:40 UTC
+# started   : 2025-11-28 22:52:21 UTC
 # hostname  : joc044.(none)
-# pid       : 35934
-# arguments : '-label' 'session_0' '-console' '//127.0.0.1:44813' '-style' 'windows' '-data' 'AAAA9HicfYyxCsIwGIS/UHR28BG6KioURTK4uCmig2uHYkVRWlQcXPRRfZN4iQTq4v3cHf/9lxjAPp1zBCQPSYcFSzbMpSu2cpiSMWLCgBlDaT9wLGba/18DzPvrWEMTZv36cWjFYqwkYpcje3JKau7690bBSXmbXhhIOXNQeqFSx2vBjqum0pbrhc89Pk3jHBQ=' '-proj' '/home/joc/piezo/microprocessor_fibonacci_dd2025/fv/jgproject/sessionLogs/session_0' '-init' '-hidden' '/home/joc/piezo/microprocessor_fibonacci_dd2025/fv/jgproject/.tmp/.initCmds.tcl' 'jg_fpv.tcl'
+# pid       : 10429
+# arguments : '-label' 'session_0' '-console' '//127.0.0.1:45845' '-style' 'windows' '-data' 'AAAA9HicfYyxCsIwGIS/UHR28BG6KioURTK4uCmig2uHYkVRWlQcXPRRfZN4iQTq4v3cHf/9lxjAPp1zBCQPSYcFSzbMpSu2cpiSMWLCgBlDaT9wLGba/18DzPvrWEMTZv36cWjFYqwkYpcje3JKau7690bBSXmbXhhIOXNQeqFSx2vBjqum0pbrhc89Pk3jHBQ=' '-proj' '/home/joc/piezo/microprocessor_fibonacci_dd2025/fv/jgproject/sessionLogs/session_0' '-init' '-hidden' '/home/joc/piezo/microprocessor_fibonacci_dd2025/fv/jgproject/.tmp/.initCmds.tcl' 'jg_fpv.tcl'
 clear -all
 
 set sepIdx [lsearch $argv ---]
@@ -49,4 +49,3 @@ reset -expression !arst_n
 
 prove -all
 
-visualize -violation -property <embedded>::microprocessor_top.fv_microprocessor_i.uC_ast_add_instruction -new_window
