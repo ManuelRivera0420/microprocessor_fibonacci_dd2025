@@ -29,6 +29,10 @@ input logic [DATA_WIDTH-1:0] pc_imm
 	logic [11:0] imm;
 	logic [12:0] imm_beq;
 	logic [20:0] imm_jal;
+	
+/*	default clocking @(posedge clk);
+	endclocking */
+
 
 	`ASM(asm, fields_stable, 1'b1 |->,  $stable({rs1,rs2,rd,func3,func7}));
 	`ASM(asm, instr, 1'b1 |->,  instruction == tb_instr_addi);
@@ -36,10 +40,10 @@ input logic [DATA_WIDTH-1:0] pc_imm
 	`ASM(asm, no_x0, 1'b1 |->,  (|rs1) & (|rs2) & (|rd));
 	`ASM(asm, func3_always_0, 1'b1 |->,  ~(|func3));
 
-	//`ASM(asm, add_only, 1'b1 |->,  opcode == OPCODE_R_TYPE[6:0]);
-	//`ASM(asm, addi_only, 1'b1 |->,  opcode == OPCODE_I_TYPE[6:0] );
-	//`ASM(asm, beq_only, 1'b1 |->,  opcode == OPCODE_B_TYPE[6:0] );
-	`ASM(asm, jal_only, 1'b1 |->,  opcode == OPCODE_J_TYPE[6:0] );
+	`ASM(asm, add_only, 1'b1 |->,  opcode == OPCODE_R_TYPE[6:0]);
+//	`ASM(asm, addi_only, 1'b1 |->,  opcode == OPCODE_I_TYPE[6:0] );
+//	`ASM(asm, beq_only, 1'b1 |->,  opcode == OPCODE_B_TYPE[6:0] );
+//	`ASM(asm, jal_only, 1'b1 |->,  opcode == OPCODE_J_TYPE[6:0] );
 
 	assign tb_instr_add = {func7, rs2, rs1, func3, rd, opcode};
 	assign tb_instr_addi = {imm , rs1, func3, rd, opcode};
@@ -64,8 +68,8 @@ input logic [DATA_WIDTH-1:0] pc_imm
   `AST(uC, beq_instruction,
     instruction[6:0] == OPCODE_B_TYPE[6:0] |=>, 
 		$past(prf[rs1] == prf[rs2]) ? 
-		pc_i.pc == $past(pc_i.pc + imm_beq) : // branch taken
-		pc_i.pc == $past(pc_i.pc + 4) // branch not taken
+		 pc_i.pc == (pc_i.pc) + (imm_beq) : // branch taken
+		 pc_i.pc == (pc_i.pc) + 32'd4 // branch not taken
 )
 
   // jal -- failed
