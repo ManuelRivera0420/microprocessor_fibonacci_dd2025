@@ -38,7 +38,7 @@ module physical_register_file #(parameter DIR_WIDTH = 5, parameter DATA_WIDTH = 
     always_ff@(posedge clk,negedge arst_n)begin 
     //registers <= '{default:'0};
         if (arst_n == 1'b0)begin                        //Condition of reset
-            for (int i = 0 ; i < DATA_WIDTH; i++) begin         //For cicle to reset to 0 all values of memory array
+            for (int i = 1 ; i < DATA_WIDTH; i++) begin         //For cicle to reset to 0 all values of memory array
                 prf [i]<= '0;
             end
         end else begin

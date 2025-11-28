@@ -27,7 +27,7 @@ module microprocessor_tb ();
 		$display("opcode = %d", `CU_PATH.opcode);
 	end
 
-	microprocessor microprocessor_i (
+	microprocessor_top microprocessor_i (
     .clk(clk),
     .arst_n(arst_n),
     .instruction(uprocessor_if.instruction)
