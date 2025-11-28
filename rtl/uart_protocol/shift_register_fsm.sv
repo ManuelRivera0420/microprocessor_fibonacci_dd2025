@@ -17,7 +17,7 @@ module shift_register_fsm#(parameter DATA_WIDTH = 32, parameter INPUT_BYTE = 8, 
     output logic [DATA_WIDTH - 1 : 0] data_out, // data out to be written in the program memory after receiving 4 bytes from uart
     output logic [ADDR_WIDTH - 1 : 0] wr_addr, // write addres for the memory
     output logic inst_rdy, // flag to indicate that a instruction is ready, this is the write enable for the memory
-	 output logic [2:0] state,
+	output logic [2:0] state,
     output logic prog_rdy  // flag to indicate that the program has been initialized into the memory
 );
 
@@ -67,13 +67,10 @@ always_comb begin
     state_next = state_reg; // default state for state_next
     instruction_counter_next = instruction_counter; // default value
     temp_data_out_next = temp_data_out; // default value
-    received_byte = data_in; // default value
     
     case(state_reg)
     
         WAIT_PARAMS: begin // receive a byte from the uart to define the number of instructions to write into the memory
-            inst_rdy = 1'b0;
-            prog_rdy = 1'b0;
             if(w_en) begin
                 n_of_instructions_next = data_in;
                 state_next = WAIT_BYTE0;
@@ -83,52 +80,42 @@ always_comb begin
         end
     
         WAIT_BYTE0: begin // receive the 1st byte of the instruction
-            inst_rdy = 1'b0;
-            prog_rdy = 1'b0;
             if(w_en) begin
                 temp_data_out_next[7:0] = data_in;
                 state_next = WAIT_BYTE1;
             end else begin
-                received_byte = received_byte;
+                state_next = state_reg;
             end 
         end
 
         WAIT_BYTE1: begin // receive the 2nd byte of the instruction
-            inst_rdy = 1'b0;
-            prog_rdy = 1'b0;
             if(w_en) begin
                 temp_data_out_next[15:8] = data_in;
                 state_next = WAIT_BYTE2;
             end else begin
-                received_byte = received_byte;
+                state_next = state_reg;
             end 
         end
         
         WAIT_BYTE2: begin // receive the 3rd byte of the instruction
-            inst_rdy = 1'b0;
-            prog_rdy = 1'b0;
             if(w_en) begin
                 temp_data_out_next[23:16] = data_in;
                 state_next = WAIT_BYTE3;
             end else begin
-                received_byte = received_byte;
+                state_next = state_reg;
             end 
         end
         
         WAIT_BYTE3: begin // receive the 4th and last byte of the instruction
-            inst_rdy = 1'b0;
-            prog_rdy = 1'b0;
             if(w_en) begin
                 temp_data_out_next[31:24] = data_in;
                 state_next = WRITE_INSTRUCTION;
             end else begin
-                received_byte = received_byte;
+                state_next = state_reg;
             end 
         end
                                 
         WRITE_INSTRUCTION: begin // state to write instruction once the shifter has received 4 bytes = 32 bits instruction
-            prog_rdy = 1'b0;
-            inst_rdy = 1'b1;
             if(instruction_counter == (n_of_instructions - 1) * 4) begin 
                 state_next = DONE;
             end else begin
@@ -138,15 +125,16 @@ always_comb begin
         end
         
         DONE: begin // done state to set program ready flag to 1
-            prog_rdy = 1'b1;
-            inst_rdy = 1'b0;
-            temp_data_out_next = '0;
-            state_next = WAIT_BYTE0;
+            temp_data_out_next = {DATA_WIDTH{1'b0}};
+			instruction_counter_next = {ADDR_WIDTH{1'b0}};
+            state_next = WAIT_PARAMS;
         end
         
     endcase
 end
 
+assign prog_rdy = (state_reg == DONE);
+assign inst_rdy = (state_reg == WRITE_INSTRUCTION);
 assign data_out = temp_data_out;
 assign wr_addr = instruction_counter;
 assign state = state_reg;
