@@ -1,0 +1,100 @@
+module microprocessor_tb ();
+
+	bit clk;
+	bit arst_n;
+	logic [DATA_WIDTH - 1:0] instruction;
+
+	always #5ns clk = !clk;
+	assign #10ns arst_n = 1'b1;
+
+	microprocessor_if uprocessor_if(clk, arst_n);
+
+	`define  MEM_PATH microprocessor_i.instruction_memory_i
+	`define  ALU_PATH microprocessor_i.alu_i
+	`define  BANK_REG_PATH microprocessor_i.prf_i
+	`define  PC_PATH microprocessor_i.pc_i
+	`define  IMM_GEN_PATH microprocessor_i.imm_gen_i
+	`define  MUX_IMM_PATH microprocessor_i.mux_imm_gen_i
+	`define  MUX_PC_PATH microprocessor_i.mux_pc_i
+	`define  CU_PATH microprocessor_i.control_unit_i
+
+	initial begin 
+    wait (arst_n);
+    //instruction = 32'b0000_0000_0000_0000_0000_0101_0001_0011; //RS1 = 0,  RD = 10, addi
+		instruction = uprocessor_if.write_addi_instr(5'b01010, 5'b00000);
+		#10ns;
+    $display("RESULT = %d", `ALU_PATH.alu_result);
+		$display("opcode = %d", `CU_PATH.opcode);
+	end
+
+	microprocessor microprocessor_i (
+    .clk(clk),
+    .arst_n(arst_n),
+    .instruction(uprocessor_if.instruction)
+	);
+
+
+	initial begin // Initial block to open shared memory and probe signals
+			$shm_open("shm_db");
+			$shm_probe("ASMTR");
+	end
+
+	initial begin // Timeout thread
+		#100us;
+		$finish;
+	end
+
+endmodule
+
+
+/*
+module microprocessor_tb ();
+
+//`include "defines.svh"
+
+`define  MEM_PATH microprocessor_i.instruction_memory_i
+`define  ALU_PATH microprocessor_i.alu_i
+`define  BANK_REG_PATH microprocessor_i.prf_i
+`define  PC_PATH microprocessor_i.pc_i
+`define  IMM_GEN_PATH microprocessor_i.imm_gen_i
+`define  MUX_IMM_PATH microprocessor_i.mux_imm_gen_i
+`define  MUX_PC_PATH microprocessor_i.mux_pc_i
+`define  CU_PATH microprocessor_i.control_unit_i
+
+
+bit clk;
+bit arst_n;
+logic [DATA_WIDTH - 1:0] instruction;
+
+always #5ns clk = !clk;
+assign #10ns arst_n = 1'b1;
+
+initial begin 
+    wait (arst_n);
+    instruction = 32'b00000000000000000000010100010011;
+		#10ms;
+    $display("RESULT = %d", `ALU_PATH.alu_result);
+		$display("RESULT = %d", `CU_PATH.opcode);
+		$finish;
+end
+
+
+
+
+
+microprocessor microprocessor_i (
+    .clk(clk),
+    .arst_n(arst_n),
+    .instruction(instruction)
+);
+
+
+	initial begin // Initial block to open shared memory and probe signals
+			$shm_open("shm_db");
+			$shm_probe("ASMTR");
+	end
+
+
+
+ endmodule
+*/
