@@ -31,6 +31,8 @@ logic [4:0] nbits_next;
 
 logic [4:0] oversampling_count;
 logic [4:0] oversampling_count_next;
+logic tx_done_next;
+logic tx_next;
 
 typedef enum {IDLE = 3'b000, START = 3'b001, DATA = 3'b010, STOP = 3'b011} state_type;
 
@@ -44,6 +46,8 @@ always_ff @(posedge clk or negedge arst_n) begin
         nbits <= nbits_next;
         oversampling_count <= oversampling_count_next;
         shifted_data <= shifted_data_next;
+        tx_done <= tx_done_next;
+        tx <= tx_next;
     end
 end
 
@@ -52,16 +56,19 @@ always_comb begin
 	nbits_next = nbits;
 	oversampling_count_next = oversampling_count;
 	shifted_data_next = shifted_data;
+	tx_done_next = tx_done;
+	tx_next = tx;
 	
     case(state_reg)
 	
         IDLE: begin
             nbits_next = '0;
-            tx = 1'b1;
+            tx_done_next = 1'b1;
+            tx_next = 1'b1;
             if(tx_start) begin 
                 oversampling_count_next = '0;
                 shifted_data_next = data_in;
-                tx = 1'b0;
+                tx_next = 1'b0;
                 state_next = START;
             end
         end
@@ -78,12 +85,12 @@ always_comb begin
         end
 		
         DATA: begin
-            tx = shifted_data[0];
+            tx_next = shifted_data[0];
             if(tick) begin
                 if(oversampling_count == BIT_SAMPLING) begin
                     shifted_data_next = {1'b0, shifted_data[7:1]};
                     oversampling_count_next = '0;
-                    if(nbits == DATA_WIDTH - 1) begin
+                    if(nbits == BYTE_WIDTH - 1) begin
                         state_next = STOP;
                     end else begin
                         nbits_next = nbits + 1'b1;
@@ -95,9 +102,10 @@ always_comb begin
         end
 		
         STOP: begin
-            tx = 1'b1;
+            tx_next = 1'b1;
             if(tick) begin
                 if(oversampling_count == BIT_SAMPLING) begin
+                    tx_done_next = 1'b1;
                     state_next = IDLE;
                 end else begin
                     oversampling_count_next = oversampling_count + 1;
@@ -108,7 +116,5 @@ always_comb begin
 		
     endcase
 end
-
-assign tx_done = (state_reg == STOP) && (oversampling_count == BIT_SAMPLING);
 
 endmodule

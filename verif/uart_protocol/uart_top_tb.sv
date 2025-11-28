@@ -8,20 +8,24 @@
 // Module Name: uart_top_tb
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module uart_top_tb();
-
-localparam DATA_WIDTH = 8;
 
 bit clk;
 bit arst_n;
 logic [3:0] baud_sel;
+logic rx;
+logic rdaddr;
+logic [DATA_WIDTH - 1 : 0] data_out;
+logic [2 : 0] state;
+logic [DATA_WIDTH - 1 : 0] read_data;
+logic [((DATA_WIDTH / 4) * 7) - 1 : 0] display;
+logic rx_done;
+logic prog_rdy;
+logic tx;
 logic tx_done;
 logic tx_start;
-logic [DATA_WIDTH - 1 : 0] data_in;
-logic [DATA_WIDTH - 1 : 0] data_out;
 
-always #5ns clk = !clk;
+always #10ns clk = !clk;
 assign #50ns arst_n = 1'b1;
 
 // -----------------------------------------------------------
@@ -44,25 +48,37 @@ assign #50ns arst_n = 1'b1;
 
 
 initial begin
-    baud_sel = 4'b0011; // START BY SELECTING THE BAUD RATE
-    wait(arst_n);
-    repeat(10) @(posedge clk); // WAIT 10 POSEDGE CLK TO MAKE SURE THAT THE SYSTEM DOESN'T TRANSMIT IF THE TX_START SIGNAL IS NOT SET TO 1
-    @(posedge clk);
-    tx_start <= 1'b1; // SET THE TX_START SIGNAL TO 1 TO BEGIN THE DATA TRANSMISSION
-    std::randomize(data_in); // RANDOMIZE THE BYTE TO BE SENT BY THE TX - RX
-    #1.05ms; // WAIT THE BYTE DURATION BASED ON THE BAUD RATE SELECTED TIMING
-    $finish;
+    baud_sel = 4'b0011;
+    repeat(100) begin
+        rx = 1'b1;
+        #250us;
+        repeat(8) begin
+            rx = 1'b0;
+            #106us;
+            std::randomize(rx);
+            #106us;
+            rx = 1'b1; 
+        end
+        #200us;
+    end
 end
 
 uart_top uart_top_i(
     .clk(clk),
     .arst_n(arst_n),
-    .tx_start(tx_start),
-    .data_in(data_in),
+    .rx(rx),
     .baud_sel(baud_sel),
-    .tx_done(tx_done),
+    .rdaddr(rdaddr),
+    .state(state),
+    .prog_rdy(prog_rdy),
     .rx_done(rx_done),
-    .data_out(data_out)
+    .data_out(data_out),
+    .display(display),
+    .read_data(display),
+    .tx(tx),
+    .tx_done(tx_done),
+    .tx_start(tx_start)
 );
 
 endmodule
+
