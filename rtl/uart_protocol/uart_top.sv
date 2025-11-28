@@ -31,7 +31,13 @@ logic tick;
 logic inst_rdy;
 logic [BYTE_WIDTH - 1 : 0] uart_byte;
 logic [ADDR_WIDTH - 1 : 0] wr_addr;
+logic [BYTE_WIDTH - 1 : 0] n_instructions;
+logic enable;
 
+fibonacci_fsm fibonacci_fsm_i(
+
+);
+ 
 shift_register_fsm #(.BYTE_WIDTH(BYTE_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) shift_register_fsm_i(
     .clk (clk),
     .arst_n (arst_n),
@@ -41,6 +47,7 @@ shift_register_fsm #(.BYTE_WIDTH(BYTE_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) shift_reg
     .wr_addr (wr_addr), // write addres for the memory
     .inst_rdy (inst_rdy), // flag to indicate that a instruction is ready, this is the write enable for the memory
 	.state (state),
+	.n_instructions(n_instructions),
     .prog_rdy (prog_rdy)  // flag to indicate that the program has been initialized into the memory
 );
 
@@ -49,6 +56,7 @@ baud_rate_generator #(.CLK_FREQ(CLK_FREQ)) baud_rate_generator_i(
     .clk(clk),
     .arst_n(arst_n),
     .tick(tick),
+    .enable(enable),
     .baud_sel(baud_sel)
 );
 
@@ -73,6 +81,7 @@ receiver #(.BYTE_WIDTH(BYTE_WIDTH)) receiver_i(
 .tick(tick),
 .rx(rx), // RX CONNECTED TO THE TX FROM THE TRANSMITTER MODULE
 .rx_done(rx_done),
+.enable(enable),
 .data_out(uart_byte)
 );
 

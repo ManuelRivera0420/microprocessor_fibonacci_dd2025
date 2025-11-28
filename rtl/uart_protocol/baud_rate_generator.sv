@@ -12,6 +12,7 @@
 module baud_rate_generator #(parameter CLK_FREQ =50_000_000)(
     input  logic       clk,
     input  logic       arst_n,
+    input  logic enable,
     input  logic [3:0] baud_sel,
     output logic       tick
 );
@@ -50,7 +51,7 @@ always_ff @(posedge clk or negedge arst_n) begin
     if(!arst_n) begin
         tick    <= 1'b0;
         counter <= 32'd0;
-    end else begin
+    end else if (enable) begin
         if (counter == counter_max) begin
             counter <= 32'd0;
             tick    <= 1'b1;

@@ -18,6 +18,7 @@ module shift_register_fsm#(parameter DATA_WIDTH = 32, parameter BYTE_WIDTH = 8, 
     output logic [ADDR_WIDTH - 1 : 0] wr_addr, // write addres for the memory
     output logic inst_rdy, // flag to indicate that a instruction is ready, this is the write enable for the memory
 	output logic [2:0] state,
+	output logic [BYTE_WIDTH - 1 : 0] n_instructions,
     output logic prog_rdy  // flag to indicate that the program has been initialized into the memory
 );
 
@@ -32,6 +33,11 @@ logic [DATA_WIDTH - 1 : 0] temp_data_out;
 logic [DATA_WIDTH - 1 : 0] temp_data_out_next;
 
 logic [BYTE_WIDTH - 1 : 0] received_byte;
+logic w_en_reg;
+
+always_ff@(posedge clk) begin
+    w_en_reg <= w_en;
+end
 
 // states for the fsm
 typedef enum logic [2:0]{
@@ -71,7 +77,7 @@ always_comb begin
     case(state_reg)
     
         WAIT_PARAMS: begin // receive a byte from the uart to define the number of instructions to write into the memory
-            if(w_en) begin
+            if(w_en_reg) begin
                 n_of_instructions_next = data_in;
                 state_next = WAIT_BYTE0;
             end else begin
@@ -80,7 +86,7 @@ always_comb begin
         end
     
         WAIT_BYTE0: begin // receive the 1st byte of the instruction
-            if(w_en) begin
+            if(w_en_reg) begin
                 temp_data_out_next[7:0] = data_in;
                 state_next = WAIT_BYTE1;
             end else begin
@@ -89,7 +95,7 @@ always_comb begin
         end
 
         WAIT_BYTE1: begin // receive the 2nd byte of the instruction
-            if(w_en) begin
+            if(w_en_reg) begin
                 temp_data_out_next[15:8] = data_in;
                 state_next = WAIT_BYTE2;
             end else begin
@@ -98,7 +104,7 @@ always_comb begin
         end
         
         WAIT_BYTE2: begin // receive the 3rd byte of the instruction
-            if(w_en) begin
+            if(w_en_reg) begin
                 temp_data_out_next[23:16] = data_in;
                 state_next = WAIT_BYTE3;
             end else begin
@@ -107,7 +113,7 @@ always_comb begin
         end
         
         WAIT_BYTE3: begin // receive the 4th and last byte of the instruction
-            if(w_en) begin
+            if(w_en_reg) begin
                 temp_data_out_next[31:24] = data_in;
                 state_next = WRITE_INSTRUCTION;
             end else begin
