@@ -65,7 +65,7 @@ always_comb begin
         IMM_J: begin // 100 = J-type
             imm_out = { {12{instr[31]}}, {instr[19:12], instr[20], instr[30:21], 1'b0 } };
         end
-        default: imm_out = '0;
+        default: imm_out = IMM_NF;
     endcase
 end
 
