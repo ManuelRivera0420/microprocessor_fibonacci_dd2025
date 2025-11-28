@@ -74,19 +74,6 @@ input logic [DATA_WIDTH-1:0] pc_imm
 		pc_i.pc == $past(pc_i.pc + imm_jal) // unconditional jump
 )
 
-  //// sub instruction (sub x2, x0, x1)
-  //`AST(uC, sub_instruction,
-  //  instruction == 32'h4010_0133 |=>,
-  //  prf[2] == prf[0]-prf[1]
-  //)
-
-  //// beq instruction (beq x4 x5 4095)
-  //`ASM(prf, beq, 1'b1 |->, prf[4] == prf[5])
-  //`AST(uC, beq_instruction,
-  //  instruction == 32'h7e52_0fe3 |=>,
-  //  pc_imm == 12'hFFF
-  //)
-
 
 endmodule
 
