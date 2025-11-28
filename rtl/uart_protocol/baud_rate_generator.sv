@@ -12,12 +12,11 @@
 module baud_rate_generator #(parameter CLK_FREQ =50_000_000)(
     input  logic       clk,
     input  logic       arst_n,
-    input  logic enable,
     input  logic [3:0] baud_sel,
     output logic       tick
 );
 
-localparam int BAUD_TABLE [0:12] = '{
+localparam int BAUD_TABLE [0:12] = {
     1200,
     2400,
     4800,
@@ -51,7 +50,7 @@ always_ff @(posedge clk or negedge arst_n) begin
     if(!arst_n) begin
         tick    <= 1'b0;
         counter <= 32'd0;
-    end else if (enable) begin
+    end else begin
         if (counter == counter_max) begin
             counter <= 32'd0;
             tick    <= 1'b1;
