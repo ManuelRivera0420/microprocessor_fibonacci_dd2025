@@ -55,7 +55,7 @@ instruction_memory #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH), .BYTE_WID
 
 ///////////////////////////////////////
 //instanciation of prf
-bank_reg_s #(.DIR_WIDTH(DIR_WIDTH), .DATA_WIDTH(DATA_WIDTH)) prf_i (
+physical_register_file #(.DIR_WIDTH(DIR_WIDTH), .DATA_WIDTH(DATA_WIDTH)) prf_i (
     .clk(clk),
     .arst_n(arst_n),
     .write_en(uc_reg_write_en),
