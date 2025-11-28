@@ -8,7 +8,7 @@ module microprocessor_top (
 		output logic [DATA_WIDTH - 1:0]alu_result // Temporay, set as ports to sinthetize
 );
 
-//`include "defines.svh"
+`include "defines.svh"
 
 //internal signals
 //signals for prf////////////
@@ -94,7 +94,7 @@ mux #(.WIDTH(32)) mux_pc_i(
     .in1(pc_out_to_mux),
     .in2(r1_to_mux),
     .sel(sel_r1),
-    .out(mux_to_alu_operand2)
+    .out(mux_to_alu_operand1)
 );
 
 
@@ -111,7 +111,7 @@ mux #(.WIDTH(32)) mux_imm_gen_i(
     .in1(imm_out_to_mux),
     .in2(r2_to_mux),
     .sel(sel_r2),
-    .out(mux_to_alu_operand1)
+    .out(mux_to_alu_operand2)
 );
 
 
