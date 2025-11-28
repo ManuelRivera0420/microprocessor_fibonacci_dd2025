@@ -11,19 +11,19 @@ set FV_TOP [lindex $argv [expr {$sepIdx + 1}]]
 
 ### ----------------------------------
 
-set RTL_DIR "/home/joc/piezo/microprocessor_fibonacci_dd2025/control_unit_rodrigo/rtl"
-set FV_DIR  "/home/joc/piezo/microprocessor_fibonacci_dd2025/control_unit_rodrigo/fv"
+set RTL_DIR "/home/joc/piezo/microprocessor_fibonacci_dd2025/rtl"
+set FV_DIR  "/home/joc/piezo/microprocessor_fibonacci_dd2025/fv"
 
 foreach f {
   defines.svh
   mux.sv
   program_counter.sv
-  bank_reg_s.sv
+  physical_register_file.sv
   instruction_memory.sv
   imm_gen.sv
   alu.sv
   control_unit.sv
-  microprocessor.sv
+  microprocessor_top.sv
 } {
   eval analyze -sv $RTL_DIR/$f
 }

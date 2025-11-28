@@ -8,7 +8,7 @@ module microprocessor_top (
 		output logic [DATA_WIDTH - 1:0]alu_result // Temporay, set as ports to sinthetize
 );
 
-`include "defines.svh"
+//`include "defines.svh"
 
 //internal signals
 //signals for prf////////////
@@ -44,14 +44,14 @@ logic [4:0] instruction_r2_dir;
 /////instruction memory signals
 logic [DATA_WIDTH - 1:0] instruction_out;
 //instanciation of intruction memory/// 
-instruction_memory #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH), .BYTE_WIDTH(BYTE_WIDTH), .MEM_DEPTH(MEM_DEPTH)) instruction_memory_i (
+/*instruction_memory #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH), .BYTE_WIDTH(BYTE_WIDTH), .MEM_DEPTH(MEM_DEPTH)) instruction_memory_i (
     .clk(clk),
     .data_in(instruction),
     .rd_addr(pc_out), 
     .rd_data(instruction_out),
     .wr_aaddr('0),
     .w_en(1'b0)
-);
+);*/
 
 ///////////////////////////////////////
 //instanciation of prf

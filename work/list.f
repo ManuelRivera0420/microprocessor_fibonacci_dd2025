@@ -1,8 +1,8 @@
 # ============================ rtl
 ../rtl/defines.svh
-../rtl/microprocessor.sv
+../rtl/microprocessor_top.sv
 ../rtl/instruction_memory.sv
-../rtl/bank_reg_s.sv
+../rtl/physical_register_file.sv
 ../rtl/alu.sv
 ../rtl/program_counter.sv
 ../rtl/imm_gen.sv
