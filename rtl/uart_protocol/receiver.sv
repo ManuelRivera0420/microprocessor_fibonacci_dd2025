@@ -49,7 +49,7 @@ always_comb begin
     nbits_next              = nbits;
     data_out_reg_next       = data_out_reg;
     state_next              = state_reg;
-    rx_done_next = rx_done;
+    rx_done_next = 1'b0;
 
     case(state_reg)
         IDLE: begin
@@ -101,11 +101,13 @@ always_comb begin
             if (tick) begin
                 if (rx) begin
                     if (oversampling_count == BIT_SAMPLING) begin
-                        rx_done_next = 1'b1;
                         state_next = IDLE;
                         oversampling_count_next = '0;
                     end else begin
                         oversampling_count_next = oversampling_count + 1;
+						if (oversampling_count == HALFBIT_SAMPLING) begin
+							rx_done_next = 1'b1;
+						end
                     end
                 end else begin
                     state_next = IDLE;
