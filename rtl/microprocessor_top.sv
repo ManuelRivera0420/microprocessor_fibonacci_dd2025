@@ -44,6 +44,7 @@ logic memwrite;
 /////instruction memory signals
 logic [DATA_WIDTH - 1:0] instruction_out;
 //instanciation of intruction memory/// 
+/*
 instruction_memory #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH), .BYTE_WIDTH(BYTE_WIDTH), .MEM_DEPTH(MEM_DEPTH)) instruction_memory_i (
     .clk(clk),
     .data_in(instruction),
@@ -63,14 +64,15 @@ data_memory #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH), .MEM_DEPTH(MEM_D
     .w_en(memwrite)
 );
 ///////////////////////////////////////
+*/
 //instanciation of prf
 physical_register_file #(.DIR_WIDTH(DIR_WIDTH), .DATA_WIDTH(DATA_WIDTH)) prf_i (
     .clk(clk),
     .arst_n(arst_n),
     .write_en(uc_reg_write_en),
-    .read_dir1(instruction_out[19:15]),
-    .read_dir2(instruction_out[24:20]),
-    .write_dir(instruction_out[11:7]),
+    .read_dir1(instruction[19:15]),
+    .read_dir2(instruction[24:20]),
+    .write_dir(instruction[11:7]),
     .write_data(data_prf_in),
     .read_data1(r1_to_mux),
     .read_data2(r2_to_mux)
@@ -109,7 +111,7 @@ mux #(.WIDTH(32)) mux_pc_i(
 
 //instanciation of immgen
 imm_gen imm_gen_i (
-    .instr(instruction_out),
+    .instr(instruction),
     .imm_sel(imm_sel),
     .imm_out(imm_out_to_mux)
 );
@@ -123,12 +125,11 @@ mux #(.WIDTH(32)) mux_imm_gen_i(
     .out(mux_to_alu_operand2)
 );
 
-
 //instanciation of ocntrol unit 
 control_unit control_unit_i (
-    .opcode   (instruction_out[6:0]),
-    .funct_7  (instruction_out[31:25]),
-    .funct_3  (instruction_out[14:12]),
+    .opcode   (instruction[6:0]),
+    .funct_7  (instruction[31:25]),
+    .funct_3  (instruction[14:12]),
     ///////////////////////////////////////////////
     .memread(memread), // To synthetize
     .memwrite(memwrite),
