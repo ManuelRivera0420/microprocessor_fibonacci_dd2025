@@ -1,4 +1,6 @@
-module microprocessor_tb ();
+module microprocessor_if_tb();
+//    `include "defines.svh"
+    
     bit clk;
     bit arst_n;
     logic [DIR_WIDTH-1:0] rd;
@@ -27,7 +29,7 @@ module microprocessor_tb ();
      
         repeat(10)begin 
             std::randomize(rd,rs1);
-            instruction = tbprocessor_if.write_addi_instr(rd,rs1);
+            tbprocessor_if.write_addi_instr(rd,rs1);
             #10ns;
 //            $display("RESULT = %d", `ALU_PATH.alu_result);
 //		    $display("opcode = %d", `CU_PATH.opcode);
@@ -35,23 +37,23 @@ module microprocessor_tb ();
                 
         repeat(10)begin 
             std::randomize(rs1,rs2,rd);
-            instruction = tbprocessor_if.write_add_instr(rs1,rs2,rd);
+            tbprocessor_if.write_add_instr(rs1,rs2,rd);
             #10ns;
 //            $display("RESULT = %d", `ALU_PATH.alu_result);
 //		    $display("opcode = %d", `CU_PATH.opcode);
         end
         
         repeat(10)begin 
-            std::randomize(rs1,rs2);
-            instruction = tbprocessor_if.write_beq_instr(rs1,rs2, std::randomize);
+            std::randomize(rs1,rs2,imm_bq);
+            tbprocessor_if.write_beq_instr(rs1,rs2,imm_bq);
             #10ns;
 //            $display("RESULT = %d", `ALU_PATH.alu_result);
 //		    $display("opcode = %d", `CU_PATH.opcode);
         end
         
         repeat(10)begin 
-            std::randomize(rd);
-            instruction = tbprocessor_if.write_jal_instr (rd, std::randomize);
+            std::randomize(rd,imm_jal);
+            tbprocessor_if.write_jal_instr (rd,imm_jal);
             #10ns;
 //            $display("RESULT = %d", `ALU_PATH.alu_result);
 //		    $display("opcode = %d", `CU_PATH.opcode);
