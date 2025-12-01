@@ -14,7 +14,6 @@ input logic arst_n,
 input logic tick, // TICK COMING FROM THE BAUD RATE GENERATOR
 input logic rx, // INPUT SERIAL COMING FROM THE TRANSMITTER TX
 output logic rx_done, // DONE SIGNAL TO INDICATE THAT THE BYTE HAS BEEN RECEIVED
-output logic enable,
 output logic [BYTE_WIDTH - 1 : 0] data_out // OUPUT SIGNAL FOR THE BYTE RECEIVED
 );
 
@@ -28,7 +27,6 @@ logic [4:0] oversampling_count_next;
 logic [BYTE_WIDTH - 1 : 0] data_out_reg;
 logic [BYTE_WIDTH - 1 : 0] data_out_reg_next;
 logic rx_done_next;
-logic enable_next;
 
 typedef enum logic [2:0] {IDLE = 3'b000, START = 3'b001, DATA = 3'b010, STOP = 3'b011} state_type;
 
@@ -43,7 +41,6 @@ always_ff @(posedge clk or negedge arst_n) begin
         nbits <= nbits_next;
         data_out_reg <= data_out_reg_next;
         rx_done <= rx_done_next;
-        enable <= enable_next;
     end
 end
 
@@ -52,8 +49,7 @@ always_comb begin
     nbits_next              = nbits;
     data_out_reg_next       = data_out_reg;
     state_next              = state_reg;
-    rx_done_next = rx_done;
-    enable_next = enable;
+    rx_done_next = 1'b0;
 
     case(state_reg)
         IDLE: begin
@@ -62,7 +58,7 @@ always_comb begin
             data_out_reg_next       = data_out_reg;
             nbits_next              = '0;
             if (!rx) begin
-                enable_next = 1'b1;
+                data_out_reg_next = '0;
                 state_next = START;
 			end
         end
@@ -105,12 +101,13 @@ always_comb begin
             if (tick) begin
                 if (rx) begin
                     if (oversampling_count == BIT_SAMPLING) begin
-                        rx_done_next = 1'b1;
                         state_next = IDLE;
                         oversampling_count_next = '0;
-                        enable_next = 1'b0;
                     end else begin
                         oversampling_count_next = oversampling_count + 1;
+						if (oversampling_count == HALFBIT_SAMPLING) begin
+							rx_done_next = 1'b1;
+						end
                     end
                 end else begin
                     state_next = IDLE;

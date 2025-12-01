@@ -122,7 +122,7 @@ always_comb begin
         end
                                 
         WRITE_INSTRUCTION: begin // state to write instruction once the shifter has received 4 bytes = 32 bits instruction
-            if(instruction_counter == (n_of_instructions - 1) * 4) begin 
+            if(instruction_counter == (n_of_instructions - 1) * 4) begin
                 state_next = DONE;
             end else begin
                 instruction_counter_next = instruction_counter + 3'd4;
