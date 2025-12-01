@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-module Data_Memory #(
+module data_memory #(
     parameter DATA_WIDTH = 32,      // Ancho de instruccion / dato
     parameter ADDR_WIDTH = 32,      // Ancho de dirección del PC
     parameter MEM_DEPTH  = 1024        // Profundidad (4 renglones: 0,1,2,3)

@@ -21,10 +21,14 @@ module microprocessor_tb ();
 	initial begin 
     wait (arst_n);
     //instruction = 32'b0000_0000_0000_0000_0000_0101_0001_0011; //RS1 = 0,  RD = 10, addi
-		instruction = uprocessor_if.write_addi_instr(5'b01010, 5'b00000);
+		uprocessor_if.write_addi_instr(5'b01010, 5'b00000);
 		#10ns;
     $display("RESULT = %d", `ALU_PATH.alu_result);
 		$display("opcode = %d", `CU_PATH.opcode);
+	end
+
+	always_comb begin
+		instruction = uprocessor_if.instruction;
 	end
 
 	microprocessor_top microprocessor_i (
