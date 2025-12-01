@@ -24,6 +24,13 @@ module microprocessor_if_tb();
 	`define  MUX_PC_PATH microprocessor_i.mux_pc_i
 	`define  CU_PATH microprocessor_i.control_unit_i
     
+   typedef enum instruction [6:0] {
+      addi = 7'b0010011,
+      add  = 7'b0110011,
+      beq  = 7'b1100011,
+      jal  = 7'b1101111
+    } operation;
+ 
     initial begin
     wait (arst_n);
      
