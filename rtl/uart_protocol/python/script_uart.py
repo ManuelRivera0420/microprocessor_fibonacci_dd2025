@@ -1,36 +1,42 @@
 import serial
 import time
 
-# Configure the serial port parameters
-# Replace 'COMx' with your actual serial port name (e.g., 'COM3' on Windows, '/dev/ttyUSB0' on Linux)
-# Set the baud rate to match your device
-port = 'COMx'
+port = 'COM3'
 baudrate = 9600
-timeout = 1  # Timeout in seconds for read/write operations
+timeout = 1
 
 try:
-    # Open the serial port
     ser = serial.Serial(port, baudrate, timeout=timeout)
     print(f"Serial port {port} opened successfully.")
 
-    # Data to be sent (must be a bytes object)
-    # You can encode a string to bytes using .encode()
-    data_to_send = "Hello, UART!".encode('utf-8')
-    # Or create bytes directly
-    # data_to_send = b'\x01\x02\x03\x04'
+    time.sleep(0.05)  # darle chance al driver (50 ms es suficiente)
 
-    # Write the bytes to the serial port
-    bytes_written = ser.write(data_to_send)
-    print(f"Sent {bytes_written} bytes: {data_to_send}")
+    payload = [
+        b'\x93\x04\x00\x00',
+        b'\x93\x05\x00\x10',
+        b'\x93\x06\x00\x0A',
+        b'\x63\x0C\x06\x00',
+        b'\xB3\x0A\x00\x0B',
+        b'\xB3\x05\x00\x0B',
+        b'\xB3\x05\x00\x05',
+        b'\x93\x06\x00\xF6',
+        b'\x6F\x00\xFF\xDD',
+        b'\x6F\x00\x00\x00'
+    ]
 
-    # Optional: Wait for a response or ensure data is sent
-    time.sleep(0.1)
+    # Enviar número de instrucciones
+    n_instr = b'\x0A'
+    ser.write(n_instr)
+    print(f"Sent: {n_instr}")
+    time.sleep(0.005)
 
-    # Close the serial port
+    for frame in payload:
+        ser.write(frame)
+        print(f"Sent: {frame}")
+        time.sleep(0.005)   # mínimo descanso para no saturar driver
+
     ser.close()
-    print(f"Serial port {port} closed.")
+    print("Serial port closed.")
 
-except serial.SerialException as e:
-    print(f"Error opening or communicating with serial port: {e}")
 except Exception as e:
-    print(f"An unexpected error occurred: {e}")
+    print("ERROR:", e)

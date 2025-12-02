@@ -48,7 +48,7 @@ always_comb begin
 end
 */
 
-assign counter_max = (CLK_FREQ / (9600 * 16)) - 1;
+assign counter_max = (CLK_FREQ / (9600 * 16));
 
 always_ff @(posedge clk or negedge arst_n) begin
     if(!arst_n) begin
