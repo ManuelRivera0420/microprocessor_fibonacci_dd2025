@@ -4,7 +4,12 @@ module microprocessor_top (
     input logic [DATA_WIDTH - 1:0] instruction,
     output logic [DATA_WIDTH - 1:0] data_out,
     output logic memread,
-    output logic memtoreg
+    output logic memtoreg,
+    //inputs for instruction memory
+    input logic wr_addr,
+    input logic wr_en,
+    //inputs for data memory
+    input logic rd_addr
 );
 
 `include "defines.svh"
@@ -49,18 +54,8 @@ instruction_memory #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH), .BYTE_WID
     .data_in(instruction),
     .rd_addr(pc_out), 
     .rd_data(instruction_out),
-    .wr_aaddr(),
-    .w_en()
-);
-
-//instanciation of data_memory 
-data_memory #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH), .MEM_DEPTH(MEM_DEPTH)) data_memory_i (
-    .clk(clk),
-    .data_in(data_prf_in),
-    .rd_addr(), 
-    .rd_data(data_out),
-    .wr_aaddr(pc_out),
-    .w_en(memwrite)
+    .wr_addr(wr_addr),
+    .w_en(wr_en)
 );
 ///////////////////////////////////////
 //instanciation of prf

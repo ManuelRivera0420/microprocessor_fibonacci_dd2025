@@ -6,7 +6,7 @@ module microprocessor_tb ();
 
 	always #5ns clk = !clk;
 	assign #10ns arst_n = 1'b1;
-
+/*
 	microprocessor_if uprocessor_if(clk, arst_n);
 
 	`define  MEM_PATH microprocessor_i.instruction_memory_i
@@ -46,11 +46,11 @@ module microprocessor_tb ();
 
 endmodule
 
+*/
 
-/*
-module microprocessor_tb ();
+module microprocessor_top_tb ();
 
-//`include "defines.svh"
+`include "defines.svh"
 
 `define  MEM_PATH microprocessor_i.instruction_memory_i
 `define  ALU_PATH microprocessor_i.alu_i
@@ -97,4 +97,4 @@ microprocessor microprocessor_i (
 
 
  endmodule
-*/
+
