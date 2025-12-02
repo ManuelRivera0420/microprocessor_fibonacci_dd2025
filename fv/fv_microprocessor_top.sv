@@ -21,7 +21,7 @@ input logic [DATA_WIDTH-1:0] data_out
 	logic [12:0] imm_beq;
 	logic [20:0] imm_jal;
 
-	`ASM(asm, fields_stable, 1'b1 |->,  $stable({rs1,rs2,rd,funct3,funct7}));
+	//`ASM(asm, fields_stable, 1'b1 |->,  $stable({rs1,rs2,rd,funct3,funct7}));
 	//`ASM(asm, fields_stable, 1'b1 |->,  $stable({funct7, rs2, rs1, funct3, rd, opcode}));
 
 	`ASM(asm, no_x0, 1'b1 |->,  (|rs1) & (|rs2) & (|rd));
