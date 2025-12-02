@@ -16,6 +16,7 @@ module baud_rate_generator #(parameter CLK_FREQ =50_000_000)(
     output logic       tick
 );
 
+/*
 localparam int BAUD_TABLE [0:12] = {
     1200,
     2400,
@@ -31,6 +32,9 @@ localparam int BAUD_TABLE [0:12] = {
     460800,
     921600
 };
+
+*/
+
 
 logic [31:0] counter_max;
 logic [31:0] counter;
