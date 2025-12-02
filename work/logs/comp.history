@@ -1,8 +1,0 @@
-s1(28Nov2025:17:53:18):  xrun -f list.f -l ./logs/comp.log +define+alfacen_noaxi_base_test+ -access +rwc -timescale 1ns/1ps -sv 
-s2(28Nov2025:17:53:44):  xrun -f list.f -l ./logs/comp.log +define+alfacen_noaxi_base_test+ -access +rwc -timescale 1ns/1ps -sv 
-s3(28Nov2025:17:54:02):  xrun -f list.f -l ./logs/comp.log +define+alfacen_noaxi_base_test+ -access +rwc -timescale 1ns/1ps -sv 
-s4(28Nov2025:17:54:25):  xrun -f list.f -l ./logs/comp.log +define+alfacen_noaxi_base_test+ -access +rwc -timescale 1ns/1ps -sv 
-s5(28Nov2025:17:54:51):  xrun -f list.f -l ./logs/comp.log +define+alfacen_noaxi_base_test+ -access +rwc -timescale 1ns/1ps -sv 
-s6(28Nov2025:17:55:07):  xrun -f list.f -l ./logs/comp.log +define+alfacen_noaxi_base_test+ -access +rwc -timescale 1ns/1ps -sv 
-s7(28Nov2025:17:56:16):  xrun -f list.f -l ./logs/comp.log +define+alfacen_noaxi_base_test+ -access +rwc -timescale 1ns/1ps -sv 
-s8(28Nov2025:17:57:06):  xrun -f list.f -l ./logs/comp.log +define+alfacen_noaxi_base_test+ -access +rwc -timescale 1ns/1ps -sv 
