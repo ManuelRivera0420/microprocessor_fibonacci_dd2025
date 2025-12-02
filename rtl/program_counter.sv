@@ -19,7 +19,7 @@ module program_counter(
     output logic [31:0] pc
 );
 
-//`include "defines.svh"
+`include "defines.svh"
 
     
     //Secuential logic 

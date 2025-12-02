@@ -71,7 +71,7 @@ always_comb begin
                     data_out_reg_next = '0;
                     state_next = DATA;
                 end else begin
-                    oversampling_count_next = oversampling_count + 1;
+                    oversampling_count_next = oversampling_count + 1'b1;
                     if (oversampling_count == HALFBIT_SAMPLING) begin
                         state_next = (!rx) ? START : IDLE;
 					end	
@@ -83,13 +83,13 @@ always_comb begin
             if (tick) begin
                 if (oversampling_count == BIT_SAMPLING) begin
                     oversampling_count_next = '0;
-                    if (nbits == (BYTE_WIDTH - 1)) begin
+                    if (nbits == (BYTE_WIDTH - 1'b1)) begin
                         state_next = STOP;
                     end else begin
-                        nbits_next = nbits + 1;
+                        nbits_next = nbits + 1'b1;
 					end
                 end else begin
-                    oversampling_count_next = oversampling_count + 1;
+                    oversampling_count_next = oversampling_count + 1'b1;
                     if (oversampling_count == HALFBIT_SAMPLING) begin
                         data_out_reg_next = {rx, data_out_reg[BYTE_WIDTH-1:1]};
 					end
@@ -104,7 +104,7 @@ always_comb begin
                         state_next = IDLE;
                         oversampling_count_next = '0;
                     end else begin
-                        oversampling_count_next = oversampling_count + 1;
+                        oversampling_count_next = oversampling_count + 1'b1;
 						if (oversampling_count == HALFBIT_SAMPLING) begin
 							rx_done_next = 1'b1;
 						end

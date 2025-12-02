@@ -19,7 +19,7 @@ module alu #(parameter N = 32)(
     output logic [N-1:0] alu_result    // ALU result, destiny is another register
     );
 
-//`include "defines.svh"
+`include "defines.svh"
 
 // internal signals
 //logic [N-1:0] first_operand;
