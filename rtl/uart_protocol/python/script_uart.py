@@ -9,8 +9,9 @@ try:
     ser = serial.Serial(port, baudrate, timeout=timeout)
     print(f"Serial port {port} opened successfully.")
 
-    time.sleep(0.05)  # darle chance al driver (50 ms es suficiente)
+    time.sleep(0.05)
 
+    # Instrucciones para la serie fibonacci
     payload = [
         b'\x93\x04\x00\x00',
         b'\x93\x05\x00\x10',
@@ -33,7 +34,7 @@ try:
     for frame in payload:
         ser.write(frame)
         print(f"Sent: {frame}")
-        time.sleep(0.005)   # mínimo descanso para no saturar driver
+        time.sleep(0.005)
 
     ser.close()
     print("Serial port closed.")
