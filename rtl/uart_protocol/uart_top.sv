@@ -63,7 +63,7 @@ baud_rate_generator #(.CLK_FREQ(CLK_FREQ)) baud_rate_generator_i(
 transmitter #(.BYTE_WIDTH(BYTE_WIDTH)) transmitter_i(
    .clk(clk),
    .arst_n(arst_n),
-   .data_in(uart_byte),
+   .data_in(8'd10),
    .tick(tick),
    .tx_start(rx_done),
    .tx(tx),
