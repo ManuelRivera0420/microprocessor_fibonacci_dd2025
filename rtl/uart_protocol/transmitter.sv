@@ -79,7 +79,7 @@ always_comb begin
                     oversampling_count_next = '0;
                     state_next = DATA;             
                 end else begin
-                    oversampling_count_next = oversampling_count + 1;
+                    oversampling_count_next = oversampling_count + 1'b1;
                 end
             end
         end
@@ -90,13 +90,13 @@ always_comb begin
                 if(oversampling_count == BIT_SAMPLING) begin
                     shifted_data_next = {1'b0, shifted_data[7:1]};
                     oversampling_count_next = '0;
-                    if(nbits == BYTE_WIDTH - 1) begin
+                    if(nbits == BYTE_WIDTH - 1'b1) begin
                         state_next = STOP;
                     end else begin
                         nbits_next = nbits + 1'b1;
                     end
                 end else begin
-                    oversampling_count_next = oversampling_count + 1;
+                    oversampling_count_next = oversampling_count + 1'b1;
                 end
             end
         end
@@ -108,7 +108,7 @@ always_comb begin
                     tx_done_next = 1'b1;
                     state_next = IDLE;
                 end else begin
-                    oversampling_count_next = oversampling_count + 1;
+                    oversampling_count_next = oversampling_count + 1'b1;
                     state_next = STOP;
                 end
             end

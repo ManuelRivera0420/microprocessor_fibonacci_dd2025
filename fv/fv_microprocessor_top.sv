@@ -37,10 +37,10 @@ input logic [DATA_WIDTH-1:0] pc_imm
 	//`ASM(asm, fields_stable, 1'b1 |->,  $stable({rs1,rs2,rd,funct3,funct7}));
 	//`ASM(asm, fields_stable, 1'b1 |->,  $stable({funct7, rs2, rs1, funct3, rd, opcode}));
 
-	//`ASM(asm, instr, 1'b1 |->,  instruction == tb_instr_addi);
+	`ASM(asm, instr, 1'b1 |->,  instruction == tb_instr_addi);
 //	`ASM(asm, instr, 1'b1 |->,  instruction == tb_instr_add);
  // `ASM(asm, instr, 1'b1 |->,  instruction == tb_instr_beq);
-  `ASM(asm, instr, 1'b1 |->,  instruction == tb_instr_add);
+  //`ASM(asm, instr, 1'b1 |->,  instruction == tb_instr_add);
 
 
 
@@ -51,9 +51,9 @@ input logic [DATA_WIDTH-1:0] pc_imm
 	`ASM(asm, funct7_always_0, 1'b1 |->, ~(|funct7));  
 
 //	`ASM(asm, add_only, 1'b1 |->,  opcode == OPCODE_R_TYPE[6:0]);
-//	`ASM(asm, addi_only, 1'b1 |->,  opcode == OPCODE_I_TYPE[6:0] );
+	`ASM(asm, addi_only, 1'b1 |->,  opcode == OPCODE_I_TYPE[6:0] );
 //	`ASM(asm, beq_only, 1'b1 |->,  opcode == OPCODE_B_TYPE[6:0] );
-	`ASM(asm, jal_only, 1'b1 |->,  opcode == OPCODE_J_TYPE[6:0] );
+//	`ASM(asm, jal_only, 1'b1 |->,  opcode == OPCODE_J_TYPE[6:0] );
 
 	assign tb_instr_add = {funct7, rs2, rs1, funct3, rd, opcode};
 	assign tb_instr_addi = {imm , rs1, funct3, rd, opcode};
@@ -67,12 +67,16 @@ input logic [DATA_WIDTH-1:0] pc_imm
     instruction[6:0] == OPCODE_R_TYPE[6:0] |-> ,
     alu_i.alu_result == (prf_i.read_data1) + (prf_i.read_data2)
   )
-
+/*
   // addi instruction (addi rd, rs1)
   `AST(uC, addi_instruction,
-    instruction[6:0] == OPCODE_I_TYPE[6:0] |=>,
-    $signed(prf[rd]) == $signed($past(prf[rs1])) + $signed($past(imm))
-  )
+    instruction[6:0] == OPCODE_I_TYPE[6:0] |->,
+    $signed(alu_i.alu_result) == $signed(prf_i.read_data1) + $signed(imm_gen_i.imm_out)
+  )*/
+  // addi instruction (addi rd, rs1)
+    `AST(uC, addi_instruction, instruction[6:0] == OPCODE_I_TYPE[6:0] |=>,
+			 $signed(prf_i.prf[$past(rd)]) == $past($signed(prf_i.read_data1)) + $past($signed(imm_gen_i.imm_out)))
+
 
   // beq -- failed
   `AST(uC, beq_instruction,
@@ -117,4 +121,3 @@ bind microprocessor_top fv_microprocessor_top fv_microprocessor_i (
     .pc_out(pc_out),
     .pc_imm(pc_imm_in)
 );
-

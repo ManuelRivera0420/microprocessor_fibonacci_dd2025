@@ -7,7 +7,7 @@ module data_memory #(
 
     input logic clk,
     input logic w_en,             // Write Enable desde CU
-    input logic [ADDR_WIDTH-1:0] wr_aaddr,       // Address
+    input logic [ADDR_WIDTH-1:0] wr_addr,       // Address
     input logic [DATA_WIDTH-1:0] data_in,      // Write data de memoria de datos
     output logic [DATA_WIDTH-1:0] rd_data      // Read Data (Dato de salida) de memoria de datos
 );
@@ -16,7 +16,7 @@ module data_memory #(
     logic [DATA_WIDTH-1:0] ram [0:MEM_DEPTH-1]; 
 
     // Lectura debe de ser combinacional
-    assign rd_data = ram[wr_aaddr[ADDR_WIDTH-1:2]];
+    assign rd_data = ram[wr_addr[ADDR_WIDTH-1:2]];
 
     // 1. Inicialización (Limpieza)
     initial begin
@@ -27,7 +27,7 @@ module data_memory #(
     // Escritura debe de ser secuencial
     always_ff @(posedge clk) begin
         if (w_en) begin
-            ram[wr_aaddr[ADDR_WIDTH-1:2]] <= data_in;         //si WE es 1, se escribe en la ram el valor
+            ram[wr_addr[ADDR_WIDTH-1:2]] <= data_in;         //si WE es 1, se escribe en la ram el valor
         end
     end
     

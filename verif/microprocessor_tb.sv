@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 module microprocessor_tb ();
 
  `include "defines.svh"
@@ -23,6 +24,23 @@ module microprocessor_tb ();
 
     microprocessor_if tbprocessor_if(clk, arst_n);
     microprocessor_top tbprocessor_top(clk, arst_n);    
+=======
+module microprocessor_if_tb();
+//    `include "defines.svh"
+    
+    bit clk;
+    bit arst_n;
+    logic [DIR_WIDTH-1:0] rd;
+    logic [DIR_WIDTH-1:0] rs1;
+    logic [DIR_WIDTH-1:0] rs2;
+    logic [12:0] imm_bq;
+    logic [20:0] imm_jal;
+    
+    always #5ns clk = !clk;
+	assign #10ns arst_n = 1'b1;
+
+    microprocessor_if tbprocessor_if(clk, arst_n);   
+>>>>>>> 02eb162053965965a03d69d51f21583e48e4c7ed
     
     `define  MEM_PATH microprocessor_i.instruction_memory_i
 	`define  ALU_PATH microprocessor_i.alu_i
@@ -40,6 +58,7 @@ module microprocessor_tb ();
       jal  = 7'b1101111
     } operation;
     
+<<<<<<< HEAD
     operation current_instruction;      
     
     initial begin
@@ -101,6 +120,60 @@ module microprocessor_tb ();
     end
 end
 
+=======
+    operation current_instruction; 
+        
+    initial begin
+    wait (arst_n);
+      $display("--- Decodificador de Instrucciones (RISC-V Opcode) ---");
+
+        repeat(10)begin 
+            std::randomize(rd,rs1);
+            tbprocessor_if.write_addi_instr(rd,rs1);
+            current_instruction = tbprocessor_if.instruction[6:0];
+            #10ns;
+            $display("Instrucción actual: %s (Valor binario: %b)", 
+            current_instruction.name(), current_instruction);
+//            $display("RESULT = %d", `ALU_PATH.alu_result);
+//		    $display("opcode = %d", `CU_PATH.opcode);
+        end
+                
+        repeat(10)begin 
+            std::randomize(rs1,rs2,rd);
+            tbprocessor_if.write_add_instr(rs1,rs2,rd);
+            current_instruction = tbprocessor_if.instruction[6:0];
+            #10ns;
+            $display("Instrucción actual: %s (Valor binario: %b)", 
+            current_instruction.name(), current_instruction);
+//            $display("RESULT = %d", `ALU_PATH.alu_result);
+//		    $display("opcode = %d", `CU_PATH.opcode);
+        end
+        
+        repeat(10)begin 
+            std::randomize(rs1,rs2,imm_bq);
+            tbprocessor_if.write_beq_instr(rs1,rs2,imm_bq);
+            current_instruction = tbprocessor_if.instruction[6:0];
+            #10ns;
+            $display("Instrucción actual: %s (Valor binario: %b)", 
+            current_instruction.name(), current_instruction);
+//            $display("RESULT = %d", `ALU_PATH.alu_result);
+//		    $display("opcode = %d", `CU_PATH.opcode);
+        end
+        
+        repeat(10)begin 
+            std::randomize(rd,imm_jal);
+            tbprocessor_if.write_jal_instr (rd,imm_jal);
+            current_instruction = tbprocessor_if.instruction[6:0];
+            #10ns;
+            $display("Instrucción actual: %s (Valor binario: %b)", 
+            current_instruction.name(), current_instruction);
+//            $display("RESULT = %d", `ALU_PATH.alu_result);
+//		    $display("opcode = %d", `CU_PATH.opcode);
+        end
+        
+    end 
+
+>>>>>>> 02eb162053965965a03d69d51f21583e48e4c7ed
     microprocessor_top microprocessor_i (
         .clk(clk),
         .arst_n(arst_n),
@@ -116,5 +189,10 @@ end
 		#10us;
 		$finish;
 	end
+<<<<<<< HEAD
  endmodule
 
+=======
+    
+endmodule
+>>>>>>> 02eb162053965965a03d69d51f21583e48e4c7ed

@@ -14,15 +14,18 @@ module uart_top (
     input logic clk,
     input logic arst_n,
     input logic rx,
+	 input logic next_program,
     input logic [BAUD_SEL_SIZE - 1 : 0] baud_sel,
     input logic [ADDR_WIDTH - 1 : 0] rdaddr,
-    output logic [2:0] state,
     output logic prog_rdy,
     output logic rx_done,
     output logic [DATA_WIDTH - 1 : 0] data_out,
     output logic [((DATA_WIDTH / 4) * 7) - 1 : 0] display,
     output logic [DATA_WIDTH - 1 : 0] read_data,
     output logic tx,
+	 output logic ready,
+	 output logic [3:0] state,
+	 output logic busy,
     output logic tx_done,
     input logic tx_start
 );
@@ -36,13 +39,16 @@ logic [BYTE_WIDTH - 1 : 0] n_instructions;
 shift_register_fsm #(.BYTE_WIDTH(BYTE_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) shift_register_fsm_i(
     .clk (clk),
     .arst_n (arst_n),
+	 .next_program(next_program),
     .w_en (rx_done), // input write enable coming from uart rx_done
     .data_in (uart_byte), // data_in coming from uart data_out port
     .data_out (data_out), // data out to be written in the program memory after receiving 4 bytes from uart
     .wr_addr (wr_addr), // write addres for the memory
     .inst_rdy (inst_rdy), // flag to indicate that a instruction is ready, this is the write enable for the memory
-	.state (state),
-	.n_instructions(n_instructions),
+	 .n_instructions(n_instructions),
+	 .busy(busy),
+	 .state(state),
+	 .ready(ready),
     .prog_rdy (prog_rdy)  // flag to indicate that the program has been initialized into the memory
 );
 
@@ -57,7 +63,7 @@ baud_rate_generator #(.CLK_FREQ(CLK_FREQ)) baud_rate_generator_i(
 transmitter #(.BYTE_WIDTH(BYTE_WIDTH)) transmitter_i(
    .clk(clk),
    .arst_n(arst_n),
-   .data_in(uart_byte),
+   .data_in(8'd10),
    .tick(tick),
    .tx_start(rx_done),
    .tx(tx),

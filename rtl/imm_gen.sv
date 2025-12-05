@@ -16,7 +16,7 @@ module imm_gen(
     output logic [31:0] imm_out    // output for ALU and PC
     );
     
-//`include "defines.svh"             //define the imm instructions 
+`include "defines.svh"             //define the imm instructions 
 
 always_comb begin 
     unique case (imm_sel)
