@@ -9,43 +9,19 @@
 // Project Name: 
 //////////////////////////////////////////////////////////////////////////////////
 
-module program_counter(
+module program_counter #(parameter DATA_WIDTH = 32) (
     input logic clk,
     input logic arst_n,
-    input logic pc_write,
-    input logic zero,
-    input logic [1:0] pc_sel,
-    input logic [31:0] pc_imm_in,
-    output logic [31:0] pc
+    input logic [DATA_WIDTH - 1:0] pc_in,
+    output logic [DATA_WIDTH - 1:0] pc_out
 );
-
-`include "defines.svh"
-
-    
     //Secuential logic 
     always_ff @(posedge clk, negedge arst_n) begin
         if (!arst_n) begin
-            pc <= 32'h0000_0000;
-        end else if (pc_write) begin
-            unique case (pc_sel)
-                PC_4: begin 
-                    pc <= pc + 4;        
-                end
-                PC_BRANCH: begin
-                    if (zero) begin  //if branch taken
-                        pc <= pc + pc_imm_in; 
-                    end else begin 
-                        pc <= pc + 4;
-                    end
-                end
-                PC_JAL: begin
-                    pc <= pc + pc_imm_in; 
-                end  
-                default: begin 
-                    pc <= pc;
-                end    
-            endcase
-        end 
+            pc_out <= 32'h0000_0000;
+        end else begin
+            pc_out <= pc_in;
+        end      
     end    
 endmodule
 

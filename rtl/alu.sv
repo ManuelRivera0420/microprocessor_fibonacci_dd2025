@@ -15,7 +15,7 @@ module alu #(parameter N = 32)(
     //input logic alusrc_r1,              // ALUsrc selector for the first operand
     //input logic alusrc_r2,              // ALUsrc selector for the second operand 
     input logic [3:0]   alucontrol,     // Use 4 bits for the opcode at the moment 
-    output logic zero,
+    //output logic zero,
     output logic [N-1:0] alu_result    // ALU result, destiny is another register
     );
 
@@ -76,7 +76,7 @@ module alu #(parameter N = 32)(
         endcase
     end
     
-    assign zero = (alu_result == 0);
+   // assign zero = (alu_result == 0);
 endmodule
 
 
