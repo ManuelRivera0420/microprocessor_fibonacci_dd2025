@@ -1,6 +1,8 @@
 module microprocessor_top (
     input logic clk, 
-    input logic arst_n
+    input logic arst_n,
+    input logic prog_ready,
+    output logic prog_ack
 );
 
 `include "defines.svh"
@@ -26,8 +28,7 @@ logic cu_data_mem_wr_en; // enable data memory write
 logic [2:0] cu_imm_sel; //selector of IMM_TYPE
 logic [1:0] cu_mem_out_mux_sel; // selector for mux to MEM,ALU,PC directions
 logic branch_taken; //selector for add pc + 4 or pc + immediate
-//logic [DATA_WIDTH - 1:0] data_in; // instruction in 
-logic w_en;
+logic [DATA_WIDTH - 1:0] data_in; // instruction in 
 logic zero;
 //INPUT MUX FOR PC
 mux #(.WIDTH(DATA_WIDTH)) pc_mux_i(
@@ -40,7 +41,9 @@ mux #(.WIDTH(DATA_WIDTH)) pc_mux_i(
 program_counter pc_i (
     .clk(clk),
     .arst_n(arst_n),
+    .prog_ready(prog_ready),
     .pc_in(pc_mux_out),
+    .prog_ack(prog_ack),
     .pc_out(wr_addr)
 
 );
@@ -58,7 +61,7 @@ adder #(.DATA_WIDTH(DATA_WIDTH)) instruction_adder_i (
 //INSTRUCTION MEMORY
 instruction_memory #(.BYTE_WIDTH(BYTE_WIDTH), .MEM_DEPTH(MEM_DEPTH), .ADDR_WIDTH(ADDR_WIDTH), .DATA_WIDTH(DATA_WIDTH)) instruction_memory_i (
     .clk(clk),
-    .data_in(instruction),
+    .data_in(data_in),
     .rd_addr(wr_addr),
     .wr_addr('0),
     .w_en(1'b0),
@@ -125,7 +128,6 @@ control_unit control_unit_i (
     .cu_alu_ctrl(cu_alu_ctrl),
     .cu_mem_out_mux_sel(cu_mem_out_mux_sel),
     .cu_data_mem_wr_en(cu_data_mem_wr_en),
-    .w_en (w_en),
     .cu_pc_add_sel(cu_pc_add_sel),
     .zero(zero),
     .branch_taken(branch_taken)
