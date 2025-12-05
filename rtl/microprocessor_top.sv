@@ -2,6 +2,7 @@ module microprocessor_top (
     input logic clk, 
     input logic arst_n,
     input logic prog_ready,
+    input logic w_en,
     output logic prog_ack
 );
 
@@ -28,7 +29,7 @@ logic cu_data_mem_wr_en; // enable data memory write
 logic [2:0] cu_imm_sel; //selector of IMM_TYPE
 logic [1:0] cu_mem_out_mux_sel; // selector for mux to MEM,ALU,PC directions
 logic branch_taken; //selector for add pc + 4 or pc + immediate
-logic [DATA_WIDTH - 1:0] data_in; // instruction in 
+logic [31:0] data_in;
 logic zero;
 //INPUT MUX FOR PC
 mux #(.WIDTH(DATA_WIDTH)) pc_mux_i(
@@ -64,7 +65,7 @@ instruction_memory #(.BYTE_WIDTH(BYTE_WIDTH), .MEM_DEPTH(MEM_DEPTH), .ADDR_WIDTH
     .data_in(data_in),
     .rd_addr(wr_addr),
     .wr_addr('0),
-    .w_en(1'b0),
+    .w_en(w_en),
     .rd_data(instruction_out)
 );
 //PHYSICAL REGISTER FILE 

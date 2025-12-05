@@ -7,6 +7,8 @@ parameter BYTE_WIDTH = 8;      // Ancho de cajón de la memoria (1 Byte)
 parameter MEM_DEPTH  = 1024;      // Numero de renglones de memoria
 parameter CLK_FREQ = 50_000_000; // CLOCK FREQUENCY OF THE SYSTEM
 parameter BAUD_SEL_SIZE = 3;
+
+localparam BANK_DEPTH = MEM_DEPTH / 4; // 256 renglones por banco
 ///////////////////TYPE_R_INSTRUCTIONS////////////////////// 
 localparam OPCODE_R_TYPE = 7'b0110011;	//Type R-Instruction
 //TYPES OF OPERATIONS

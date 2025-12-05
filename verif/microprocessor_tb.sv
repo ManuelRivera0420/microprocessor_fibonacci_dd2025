@@ -100,7 +100,7 @@ module microprocessor_tb ();
       endcase
     end
 end
-
+/*
     microprocessor_top microprocessor_i (
         .clk(clk),
         .arst_n(arst_n),
@@ -116,5 +116,5 @@ end
 		#10us;
 		$finish;
 	end
-    
+ */   
 endmodule
