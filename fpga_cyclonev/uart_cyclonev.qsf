@@ -95,20 +95,21 @@ set_location_assignment PIN_AA22 -to display[24]
 set_location_assignment PIN_AA23 -to display[25]
 set_location_assignment PIN_Y23 -to display[26]
 set_location_assignment PIN_Y24 -to display[27]
-set_global_assignment -name SYSTEMVERILOG_FILE "../../../Diseño Digital Personal/uP/program_counter.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "../../../Diseño Digital Personal/uP/plus_4_or_2_mux.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "../../../Diseño Digital Personal/uP/physical_register_file.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "../../../Diseño Digital Personal/uP/mux_3_to_1.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "../../../Diseño Digital Personal/uP/mux.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "../../../Diseño Digital Personal/uP/microprocessor_top.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "../../../Diseño Digital Personal/uP/instruction_memory.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "../../../Diseño Digital Personal/uP/imm_gen.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "../../../Diseño Digital Personal/uP/data_memory.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "../../../Diseño Digital Personal/uP/control_unit.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "../../../Diseño Digital Personal/uP/branch.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "../../../Diseño Digital Personal/uP/alu.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "../../../Diseño Digital Personal/uP/adder.sv"
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/defines.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/program_counter.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/plus_4_or_2_mux.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/physical_register_file.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/mux_3_to_1.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/mux.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/microprocessor_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/instruction_memory.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/imm_gen.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/data_memory.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/control_unit.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/branch.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/alu.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/adder.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

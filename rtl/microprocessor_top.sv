@@ -6,7 +6,7 @@ module microprocessor_top (
     output logic prog_ack
 );
 
-`include "defines.svh"
+`include "defines.sv"
 
 logic [DATA_WIDTH - 1:0] pc_mux_out; //enable of PC_4 or PC_BRANCH
 logic [DATA_WIDTH - 1:0] wr_addr; // Current instruction to read in instruction memory
