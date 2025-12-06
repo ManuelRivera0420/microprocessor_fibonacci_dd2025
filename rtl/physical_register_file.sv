@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module physical_register_file #(parameter DIR_WIDTH = 5, parameter DATA_WIDTH = 32)(
+module physical_register_file #(parameter DIR_WIDTH = 10, parameter DATA_WIDTH = 256)(
     input logic clk,                    //Clock signal
     input logic arst_n,                 //Reset signal
     input logic write_en,               //Write enable signal
@@ -28,7 +28,8 @@ module physical_register_file #(parameter DIR_WIDTH = 5, parameter DATA_WIDTH = 
     input logic [DIR_WIDTH - 1:0] write_dir,        //Write direction
     input logic [DATA_WIDTH - 1:0] write_data,      //Data to write
     output logic [DATA_WIDTH - 1:0] read_data1,     //Readed Data 1
-    output logic [DATA_WIDTH - 1:0] read_data2      //Readed Data 2
+    output logic [DATA_WIDTH - 1:0] read_data2,      //Readed Data 2
+    output logic [DATA_WIDTH -1:0] fibb_out
     );
     
    // `include "../../defines.svh"
@@ -48,8 +49,9 @@ module physical_register_file #(parameter DIR_WIDTH = 5, parameter DATA_WIDTH = 
         end
     end
     always_comb begin
-        read_data1 = read_dir1 == 5'b00000 ? '0 : prf [read_dir1];      //Assignation of readed data 1 depending of read direction 1
-        read_data2 = read_dir2 == 5'b00000 ? '0 : prf [read_dir2];      //Assignation of readed data 2 depending of read direction 2
+        read_data1 = read_dir1 == '0 ? '0 : prf [read_dir1];      //Assignation of readed data 1 depending of read direction 1
+        read_data2 = read_dir2 == '0 ? '0 : prf [read_dir2];      //Assignation of readed data 2 depending of read direction 2
     end
-endmodule
+    assign fibb_out = prf[5];
 
+endmodule
