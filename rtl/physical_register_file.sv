@@ -47,11 +47,9 @@ module physical_register_file #(parameter DIR_WIDTH = 5, parameter DATA_WIDTH = 
             end
         end
     end
-    
     always_comb begin
         read_data1 = read_dir1 == 5'b00000 ? '0 : prf [read_dir1];      //Assignation of readed data 1 depending of read direction 1
         read_data2 = read_dir2 == 5'b00000 ? '0 : prf [read_dir2];      //Assignation of readed data 2 depending of read direction 2
     end
-    
 endmodule
 

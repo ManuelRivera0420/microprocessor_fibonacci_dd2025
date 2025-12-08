@@ -10,7 +10,7 @@ module microprocessor_tb ();
     logic [12:0] imm_bq;
     logic [20:0] imm_jal;
     
-    logic [DATA_WIDTH-1:0] instruction_tb;
+    logic [DATA_WIDTH-1:0] instruction_tb_addi, instruction_tb_add, instruction_tb_beq, instruction_tb_jal;
     logic [DIR_WIDTH-1:0] rd_tb, rs1_tb, rs2_tb;
     logic [11:0] imm_tb;   
 
@@ -30,23 +30,8 @@ module microprocessor_tb ();
         .arst_n(arst_n),
         .instruction(tbprocessor_if.instruction)
     );
-    
-    bind microprocessor_top fv_microprocessor_top fv_microprocessor_i (
-        // blackbox (Conexiones al DUT principal)
-        .clk        (clk),
-        .arst_n     (arst_n),
-        .instruction(tbprocessor_if.instruction), 
-        .memread    (memread),
-        .memwrite   (memwrite),
-        .memtoreg   (memtoreg),
-        .alu_result (alu_result),
-        // whitebox (Conexiones a sub-instancias)
-        .prf        (microprocessor_i.prf_i.prf), // register bank
-        .pc_out     (pc_out),
-        .pc_imm     (pc_imm)
-    );
 
-    
+     
     `define  MEM_PATH microprocessor_i.instruction_memory_i
 	`define  ALU_PATH microprocessor_i.alu_i
 	`define  BANK_REG_PATH microprocessor_i.prf_i
@@ -65,9 +50,12 @@ module microprocessor_tb ();
     
     operation current_instruction;      
     
+       
+    
     initial begin
     wait (arst_n);
       $display("--- Decodificador de Instrucciones (RISC-V Opcode) ---");
+      
       
       repeat (100) @(posedge clk) begin
       randcase
@@ -78,16 +66,13 @@ module microprocessor_tb ();
                 rd_tb = tbprocessor_if.instruction[11:7];
                 rs1_tb = tbprocessor_if.instruction[19:15];
                 imm_tb = tbprocessor_if.instruction[DATA_WIDTH-1:DATA_WIDTH-12];
-                instruction_tb = tbprocessor_if.instruction;
+                instruction_tb_addi = tbprocessor_if.instruction;
                 $display("Instrucción actual: %s (Valor binario: %b)", 
                 current_instruction.name(), current_instruction);
                 $display("RESULT = %d", `ALU_PATH.alu_result);
-                 // addi instruction (addi rd, rs1)
-                `AST(uC, instruction_tb,current_instruction == OPCODE_I_TYPE[6:0] |=>,
-                 $signed(prf[rd]) == $signed($past(prf[rs1])) + $signed($past(imm)))
                  
-                `AST(uC, instruction_tb, current_instruction == OPCODE_I_TYPE[6:0] |=>,
-                 $signed(`BANK_REG_PATH.prf[$past(rd_tb)]) == $past($signed(`BANK_REG_PATH.read_data1)) + $past($signed(`IMM_GEN_PATH.imm_out)))
+//                `AST(uC, instruction_tb, current_instruction == OPCODE_I_TYPE[6:0] |=>,
+//                 $signed(`BANK_REG_PATH.prf[$past(rd_tb)]) == $past($signed(`BANK_REG_PATH.read_data1)) + $past($signed(`IMM_GEN_PATH.imm_out)))
                 
                 
                 end
@@ -99,17 +84,16 @@ module microprocessor_tb ();
                 rd_tb = tbprocessor_if.instruction[11:7];
                 rs1_tb = tbprocessor_if.instruction[19:15];
                 rs2_tb = tbprocessor_if.instruction[24:20];
-                instruction_tb = tbprocessor_if.instruction;
+                instruction_tb_add = tbprocessor_if.instruction;
                 $display("Instrucción actual: %s (Valor binario: %b)", 
                 current_instruction.name(), current_instruction);
                 $display("RESULT = %d", `ALU_PATH.alu_result);
-                `AST(uC, instruction_tb, 
-                    current_instruction == OPCODE_R_TYPE[6:0] |-> ,
-                    alu_i.alu_result == (prf_i.read_data1) + (prf_i.read_data2))
+
                     
-                `AST(uC, instruction_tb, current_instruction == OPCODE_R_TYPE[6:0] |-> ,
-                    `ALU_PATH.alu_result == (`BANK_REG_PATH.read_data1) + (`BANK_REG_PATH.read_data2))             
+//                `AST(uC, instruction_tb2, current_instruction == OPCODE_R_TYPE[6:0] |-> ,
+//                    `ALU_PATH.alu_result == (`BANK_REG_PATH.read_data1) + (`BANK_REG_PATH.read_data2))             
             end
+
 
         1 : begin //BEQ
                 std::randomize(rs1,rs2,imm_bq);
@@ -117,23 +101,17 @@ module microprocessor_tb ();
                 current_instruction = tbprocessor_if.instruction[6:0];
                 rs1_tb = tbprocessor_if.instruction[19:15];
                 rs2_tb = tbprocessor_if.instruction[24:20];
-                instruction_tb = tbprocessor_if.instruction;
+                instruction_tb_beq = tbprocessor_if.instruction;
                 $display("Instrucción actual: %s (Valor binario: %b)", 
                 current_instruction.name(), current_instruction);
                 
-                 `AST(uC, instruction_tb,
-                        current_instruction == OPCODE_B_TYPE[6:0] |=>, 
-                        $past(prf[rs1] == prf[rs2]) ? 
-                         pc_i.pc == $past(pc_i.pc) + $past(imm_gen_i.imm_out) : // branch taken
-                         pc_i.pc == $past(pc_i.pc) + 32'd4 // branch not taken
-                         )
                          
-                 `AST(uC, instruction_tb,
-                        current_instruction == OPCODE_B_TYPE[6:0] |=>, 
-                        $past(`BANK_REG_PATH.prf[rs1_tb]  == `BANK_REG_PATH.prf[rs2_tb]) ? 
-                         `PC_PATH.pc == $past(`PC_PATH.pc) + $past(`IMM_GEN_PATH.imm_out) : // branch taken
-                         `PC_PATH.pc == $past(`PC_PATH.pc) + 32'd4 // branch not taken
-                         )
+//                 `AST(uC, instruction_tb,
+//                        current_instruction == OPCODE_B_TYPE[6:0] |=>, 
+//                        $past(`BANK_REG_PATH.prf[rs1_tb]  == `BANK_REG_PATH.prf[rs2_tb]) ? 
+//                         `PC_PATH.pc == $past(`PC_PATH.pc) + $past(`IMM_GEN_PATH.imm_out) : // branch taken
+//                         `PC_PATH.pc == $past(`PC_PATH.pc) + 32'd4 // branch not taken
+//                         )
 		    end
         
         1 : begin //JAL
@@ -141,19 +119,15 @@ module microprocessor_tb ();
                 tbprocessor_if.write_jal_instr (rd,imm_jal);
                 current_instruction = tbprocessor_if.instruction[6:0];
                 rd_tb = tbprocessor_if.instruction[11:7];
-                instruction_tb = tbprocessor_if.instruction;
+                instruction_tb_jal = tbprocessor_if.instruction;
                 $display("Instrucción actual: %s (Valor binario: %b)", 
                 current_instruction.name(), current_instruction);
                 
-                `AST(uC, instruction_tb,
-                    current_instruction == OPCODE_J_TYPE[6:0] |=>, 
-                    pc_i.pc == $past(pc_i.pc + imm_gen_i.imm_out) // unconditional jump
-                )
                 
-                `AST(uC, instruction_tb,
-                    current_instruction == OPCODE_J_TYPE[6:0] |=>, 
-                    `PC_PATH.pc == $past(`PC_PATH.pc + `IMM_GEN_PATH.imm_out) // unconditional jump
-                )
+//                `AST(uC, instruction_tb,
+//                    current_instruction == OPCODE_J_TYPE[6:0] |=>, 
+//                    `PC_PATH.pc == $past(`PC_PATH.pc + `IMM_GEN_PATH.imm_out) // unconditional jump
+//                )
 		    end
       endcase
     end
@@ -172,3 +146,17 @@ end
     
 endmodule
 
+    bind microprocessor_top microprocessor_if_tb_assertions tbprocessor_assertions (
+        // blackbox (Conexiones al DUT principal)
+        .clk        (clk),
+        .arst_n     (arst_n),
+        .instruction(tbprocessor_if.instruction), 
+        .memread    (memread),
+        .memwrite   (memwrite),
+        .memtoreg   (memtoreg),
+        .alu_result (alu_result),
+        // whitebox (Conexiones a sub-instancias)
+        .prf        (microprocessor_i.prf_i.prf), // register bank
+        .pc_out     (pc_out),
+        .pc_imm     (pc_imm)
+);
