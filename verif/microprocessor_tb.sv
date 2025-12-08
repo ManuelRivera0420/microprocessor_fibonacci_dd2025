@@ -67,16 +67,10 @@ module microprocessor_tb ();
                 rs1_tb = tbprocessor_if.instruction[19:15];
                 imm_tb = tbprocessor_if.instruction[DATA_WIDTH-1:DATA_WIDTH-12];
                 instruction_tb_addi = tbprocessor_if.instruction;
-                $display("Instrucción actual: %s (Valor binario: %b)", 
-                current_instruction.name(), current_instruction);
                 if (`ALU_PATH.alu_result == (`ALU_PATH.operand1 + `ALU_PATH.operand2)); 
                 else $error("ERROR!! Resultado esperado de %d + %d  = %d", `ALU_PATH.operand1, `ALU_PATH.operand2, `ALU_PATH.alu_result );
-                
                 if (`BANK_REG_PATH.write_dir == rd); 
-                else $error("ERROR!! Dirección esperada = %d, diorección escrita = %d", `BANK_REG_PATH.write_dir, rd);
-//                `AST(uC, instruction_tb, current_instruction == OPCODE_I_TYPE[6:0] |=>,
-//                 $signed(`BANK_REG_PATH.prf[$past(rd_tb)]) == $past($signed(`BANK_REG_PATH.read_data1)) + $past($signed(`IMM_GEN_PATH.imm_out)))
-                              
+                else $error("ERROR!! Dirección esperada = %d, diorección escrita = %d", `BANK_REG_PATH.write_dir, rd);            
                 end
 
         1 : begin // ADD
@@ -87,19 +81,12 @@ module microprocessor_tb ();
                 rs1_tb = tbprocessor_if.instruction[19:15];
                 rs2_tb = tbprocessor_if.instruction[24:20];
                 instruction_tb_add = tbprocessor_if.instruction;
-                $display("Instrucción actual: %s (Valor binario: %b)", 
-                current_instruction.name(), current_instruction);
-                $display("RESULT = %d", `ALU_PATH.alu_result);
-                $display("ACTUAL RESULT = %d", `ALU_PATH.operand1 + `ALU_PATH.operand2);
                 if (`ALU_PATH.alu_result == (`ALU_PATH.operand1 + `ALU_PATH.operand2)); 
                 else $error("ERROR!! Resultado esperado de %d + %d  = %d", `ALU_PATH.operand1, `ALU_PATH.operand2, `ALU_PATH.alu_result );
                  
                  if (`BANK_REG_PATH.write_dir == rd_tb);
                  else $error("ERROR!! Dirección esperada = %d,  dirección escrita = %d", rd_tb, `BANK_REG_PATH.write_dir);
-                   
-//                `AST(uC, instruction_tb2, current_instruction == OPCODE_R_TYPE[6:0] |-> ,
-//                    `ALU_PATH.alu_result == (`BANK_REG_PATH.read_data1) + (`BANK_REG_PATH.read_data2))             
-            end
+                 end
 
 
         1 : begin //BEQ
@@ -109,16 +96,6 @@ module microprocessor_tb ();
                 rs1_tb = tbprocessor_if.instruction[19:15];
                 rs2_tb = tbprocessor_if.instruction[24:20];
                 instruction_tb_beq = tbprocessor_if.instruction;
-                $display("Instrucción actual: %s (Valor binario: %b)", 
-                current_instruction.name(), current_instruction);
-                
-                         
-//                 `AST(uC, instruction_tb,
-//                        current_instruction == OPCODE_B_TYPE[6:0] |=>, 
-//                        $past(`BANK_REG_PATH.prf[rs1_tb]  == `BANK_REG_PATH.prf[rs2_tb]) ? 
-//                         `PC_PATH.pc == $past(`PC_PATH.pc) + $past(`IMM_GEN_PATH.imm_out) : // branch taken
-//                         `PC_PATH.pc == $past(`PC_PATH.pc) + 32'd4 // branch not taken
-//                         )
 		    end
         
         1 : begin //JAL
@@ -127,14 +104,6 @@ module microprocessor_tb ();
                 current_instruction = tbprocessor_if.instruction[6:0];
                 rd_tb = tbprocessor_if.instruction[11:7];
                 instruction_tb_jal = tbprocessor_if.instruction;
-                $display("Instrucción actual: %s (Valor binario: %b)", 
-                current_instruction.name(), current_instruction);
-                
-                
-//                `AST(uC, instruction_tb,
-//                    current_instruction == OPCODE_J_TYPE[6:0] |=>, 
-//                    `PC_PATH.pc == $past(`PC_PATH.pc + `IMM_GEN_PATH.imm_out) // unconditional jump
-//                )
 		    end
       endcase
     end
