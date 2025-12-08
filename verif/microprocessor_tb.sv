@@ -69,12 +69,14 @@ module microprocessor_tb ();
                 instruction_tb_addi = tbprocessor_if.instruction;
                 $display("Instrucción actual: %s (Valor binario: %b)", 
                 current_instruction.name(), current_instruction);
-                $display("RESULT = %d", `ALU_PATH.alu_result);
-                 
+                if (`ALU_PATH.alu_result == (`ALU_PATH.operand1 + `ALU_PATH.operand2)); 
+                else $error("ERROR!! Resultado esperado de %d + %d  = %d", `ALU_PATH.operand1, `ALU_PATH.operand2, `ALU_PATH.alu_result );
+                
+                if (`BANK_REG_PATH.write_dir == rd); 
+                else $error("ERROR!! Dirección esperada = %d, diorección escrita = %d", `BANK_REG_PATH.write_dir, rd);
 //                `AST(uC, instruction_tb, current_instruction == OPCODE_I_TYPE[6:0] |=>,
 //                 $signed(`BANK_REG_PATH.prf[$past(rd_tb)]) == $past($signed(`BANK_REG_PATH.read_data1)) + $past($signed(`IMM_GEN_PATH.imm_out)))
-                
-                
+                              
                 end
 
         1 : begin // ADD
@@ -88,8 +90,13 @@ module microprocessor_tb ();
                 $display("Instrucción actual: %s (Valor binario: %b)", 
                 current_instruction.name(), current_instruction);
                 $display("RESULT = %d", `ALU_PATH.alu_result);
-
-                    
+                $display("ACTUAL RESULT = %d", `ALU_PATH.operand1 + `ALU_PATH.operand2);
+                if (`ALU_PATH.alu_result == (`ALU_PATH.operand1 + `ALU_PATH.operand2)); 
+                else $error("ERROR!! Resultado esperado de %d + %d  = %d", `ALU_PATH.operand1, `ALU_PATH.operand2, `ALU_PATH.alu_result );
+                 
+                 if (`BANK_REG_PATH.write_dir == rd_tb);
+                 else $error("ERROR!! Dirección esperada = %d,  dirección escrita = %d", rd_tb, `BANK_REG_PATH.write_dir);
+                   
 //                `AST(uC, instruction_tb2, current_instruction == OPCODE_R_TYPE[6:0] |-> ,
 //                    `ALU_PATH.alu_result == (`BANK_REG_PATH.read_data1) + (`BANK_REG_PATH.read_data2))             
             end
@@ -145,18 +152,3 @@ end
 	end
     
 endmodule
-
-    bind microprocessor_top microprocessor_if_tb_assertions tbprocessor_assertions (
-        // blackbox (Conexiones al DUT principal)
-        .clk        (clk),
-        .arst_n     (arst_n),
-        .instruction(tbprocessor_if.instruction), 
-        .memread    (memread),
-        .memwrite   (memwrite),
-        .memtoreg   (memtoreg),
-        .alu_result (alu_result),
-        // whitebox (Conexiones a sub-instancias)
-        .prf        (microprocessor_i.prf_i.prf), // register bank
-        .pc_out     (pc_out),
-        .pc_imm     (pc_imm)
-);

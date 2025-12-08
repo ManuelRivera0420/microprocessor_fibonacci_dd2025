@@ -2,7 +2,6 @@ module microprocessor_if_tb_assertions(
 //Blackbox signals
     input logic clk, 
     input logic arst_n,
-    input logic [DATA_WIDTH-1:0] instruction_tb,
     input logic [6:0] current_instruction,
     input logic memread , 
     input logic memwrite, 
@@ -66,17 +65,17 @@ module microprocessor_if_tb_assertions(
     bind microprocessor_top microprocessor_tb microprocessor_if_tb (
         // blackbox (Conexiones al DUT principal)
         .clk        (clk),
-        .arst_n     (arst_n),
-        .instruction(microprocessor_if_tb.instruction), 
+        .arst_n     (arst_n), 
         .memread    (memread),
         .memwrite   (memwrite),
         .memtoreg   (memtoreg),
         .alu_result (alu_result),
         //
-        .instruction_tb_addi (microprocessor_if_tb.instruction_tb_addi),
-        .instruction_tb_add (microprocessor_if_tb.instruction_tb_add),
-        .instruction_tb_beq (microprocessor_if_tb.instruction_tb_beq),
-        .instruction_tb_jal (microprocessor_if_tb.instruction_tb_jal),
+        .current_instruction (current_instruction),
+        .instruction_tb_addi (instruction_tb_addi),
+        .instruction_tb_add (instruction_tb_add),
+        .instruction_tb_beq (instruction_tb_beq),
+        .instruction_tb_jal (instruction_tb_jal),
         // whitebox (Conexiones a sub-instancias)
         .prf        (microprocessor_i.prf_i.prf), // register bank
         .pc_out     (pc_out),
