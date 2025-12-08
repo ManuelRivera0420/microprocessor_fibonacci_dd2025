@@ -7,22 +7,20 @@ timeout = 1
 
 try:
     ser = serial.Serial(port, baudrate, timeout=timeout)
-    print(f"Serial port {port} opened successfully.")
-
     time.sleep(0.05)
 
-    # Instrucciones para la serie fibonacci
+
     payload = [
-        b'\x93\x04\x00\x00',
-        b'\x93\x05\x00\x10',
-        b'\x93\x06\x00\x0A',
-        b'\x63\x0C\x06\x00',
-        b'\xB3\x0A\x00\x0B',
-        b'\xB3\x05\x00\x0B',
-        b'\xB3\x05\x00\x05',
-        b'\x93\x06\x00\xF6',
-        b'\x6F\x00\xFF\xDD',
-        b'\x6F\x00\x00\x00'
+        bytes([0x13, 0x05, 0x00, 0x00]),
+        bytes([0x93, 0x05, 0x10, 0x00]),
+        bytes([0x13, 0x06, 0xf0, 0x00]),   #  ← AQUÍ VAN TUS DOS BYTES /// 0xf0 is LSB [3:0], and 0x0F is MSB [7:4]
+        bytes([0x63, 0x0C, 0x06, 0x00]),
+        bytes([0xB3, 0x02, 0xB5, 0x00]),
+        bytes([0x13, 0x85, 0x05, 0x00]),
+        bytes([0x93, 0x85, 0x02, 0x00]),
+        bytes([0x13, 0x06, 0xF6, 0xFF]),
+        bytes([0x6F, 0xF0, 0xDF, 0xFE]),
+        bytes([0x6F, 0x00, 0x00, 0x00])
     ]
 
     # Enviar número de instrucciones
@@ -38,6 +36,7 @@ try:
 
     ser.close()
     print("Serial port closed.")
+    time.sleep(0.5)
 
 except Exception as e:
     print("ERROR:", e)

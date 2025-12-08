@@ -137,7 +137,7 @@ always_comb begin
         DONE: begin // done state to set program ready flag to 1
 				instruction_counter_next = '0;
 				temp_data_out_next = {DATA_WIDTH{1'b0}};
-				if(!next_program) begin
+				if(next_program) begin
 					state_next = CLEAN_MEMORY;
 				end else begin
 					state_next = DONE;

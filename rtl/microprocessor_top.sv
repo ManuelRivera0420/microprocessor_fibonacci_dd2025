@@ -1,15 +1,25 @@
 module microprocessor_top (
     input logic clk, 
     input logic arst_n,
-    input logic prog_ready,
-    input logic w_en,
-    output logic prog_ack
+    output logic prog_ack,
+    output logic new_data,
+    output logic start,
+	
+    input logic rx,
+    input logic [BAUD_SEL_SIZE - 1 : 0] baud_sel,
+    output logic prog_rdy,
+    output logic rx_done,
+    output logic [((DATA_WIDTH / 4) * 7) - 1 : 0] display,
+    output logic [DATA_WIDTH - 1 : 0] read_data,
+	 output logic ready,
+	 output logic [3:0] state,
+	 output logic busy	
 );
 
-`include "defines.svh"
+`include "defines.sv"
 
 logic [DATA_WIDTH - 1:0] pc_mux_out; //enable of PC_4 or PC_BRANCH
-logic [DATA_WIDTH - 1:0] wr_addr; // Current instruction to read in instruction memory
+logic [DATA_WIDTH - 1:0] rdaddr; // Current instruction to read in instruction memory
 logic cu_pc_add_sel; // Selector to add +4 or +2 
 logic [2:0] instruction_increment; // operand to add +4 o +2 
 logic [DATA_WIDTH - 1:0] instruction_out; //instruction from instruction memory
@@ -31,6 +41,7 @@ logic [1:0] cu_mem_out_mux_sel; // selector for mux to MEM,ALU,PC directions
 logic branch_taken; //selector for add pc + 4 or pc + immediate
 logic [31:0] data_in;
 logic zero;
+logic [31:0] fibb_out;
 //INPUT MUX FOR PC
 mux #(.WIDTH(DATA_WIDTH)) pc_mux_i(
     .in1(alu_to_mem_addr),
@@ -42,10 +53,10 @@ mux #(.WIDTH(DATA_WIDTH)) pc_mux_i(
 program_counter pc_i (
     .clk(clk),
     .arst_n(arst_n),
-    .prog_ready(prog_ready),
+    .prog_ready(prog_rdy),
     .pc_in(pc_mux_out),
     .prog_ack(prog_ack),
-    .pc_out(wr_addr)
+    .pc_out(rdaddr)
 
 );
 //MUX OPERANDS FOR PROGRAM COUNTER ADD
@@ -56,18 +67,11 @@ plus_4_or_2_mux pc_adder_i (
 //ADDER FOR PROGRAM COUNTER
 adder #(.DATA_WIDTH(DATA_WIDTH)) instruction_adder_i (
     .constant_operand(instruction_increment),
-    .instruction_addr(wr_addr),
+    .instruction_addr(rdaddr),
     .next_instruction (next_instruction_addr)
 );
 //INSTRUCTION MEMORY
-instruction_memory #(.BYTE_WIDTH(BYTE_WIDTH), .MEM_DEPTH(MEM_DEPTH), .ADDR_WIDTH(ADDR_WIDTH), .DATA_WIDTH(DATA_WIDTH)) instruction_memory_i (
-    .clk(clk),
-    .data_in(data_in),
-    .rd_addr(wr_addr),
-    .wr_addr('0),
-    .w_en(w_en),
-    .rd_data(instruction_out)
-);
+
 //PHYSICAL REGISTER FILE 
 physical_register_file #(.DIR_WIDTH(DIR_WIDTH), .DATA_WIDTH(DATA_WIDTH)) prf_i (
     .clk(clk),
@@ -78,11 +82,12 @@ physical_register_file #(.DIR_WIDTH(DIR_WIDTH), .DATA_WIDTH(DATA_WIDTH)) prf_i (
     .write_dir(instruction_out[11:7]),
     .write_data(mem_mux_out),
     .read_data1(rs_1),
+    .fibb_out(fibb_out),
     .read_data2(rs_2)
 );
 //MUX FOR OPERAND 1 IN ALU
 mux #(.WIDTH(DATA_WIDTH)) pc_reg1_mux_i(
-    .in1(wr_addr),
+    .in1(rdaddr),
     .in2(rs_1),
     .sel(pc_mux_ctrl),
     .out(mux_to_operand_1)   
@@ -149,8 +154,66 @@ mux_3_to_1  data_mem_mux_i (
     .data_out(mem_mux_out)
 );
 
+assign start = prf_wr_en;
+assign new_data = branch_taken;
+
+
+/////////////////////////////////////////////////////// UART ///////////////////////////////////////////////////////////////////////////
+
+logic tick;
+logic inst_rdy;
+logic [BYTE_WIDTH - 1 : 0] uart_byte;
+logic [ADDR_WIDTH - 1 : 0] wr_addr;
+logic [BYTE_WIDTH - 1 : 0] n_instructions;
+logic [DATA_WIDTH - 1 : 0] shift_fsm_out;
+
+shift_register_fsm #(.BYTE_WIDTH(BYTE_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) shift_register_fsm_i(
+    .clk (clk),
+    .arst_n (arst_n),
+	 .next_program(prog_ack),
+    .w_en (rx_done), // input write enable coming from uart rx_done
+    .data_in (uart_byte), // data_in coming from uart data_out port
+    .data_out (shift_fsm_out), // data out to be written in the program memory after receiving 4 bytes from uart
+    .wr_addr (wr_addr), // write addres for the memory
+    .inst_rdy (inst_rdy), // flag to indicate that a instruction is ready, this is the write enable for the memory
+	 .n_instructions(n_instructions),
+	 .busy(busy),
+	 .state(state),
+	 .ready(ready),
+    .prog_rdy (prog_rdy)  // flag to indicate that the program has been initialized into the memory
+);
+
+
+baud_rate_generator #(.CLK_FREQ(CLK_FREQ)) baud_rate_generator_i(
+    .clk(clk),
+    .arst_n(arst_n),
+    .tick(tick),
+    .baud_sel(baud_sel)
+);
+
+ 
+display_7_segments #(.DATA_WIDTH(DATA_WIDTH)) display_7_segments_i(
+    .data_in (fibb_out),
+    .display (display)
+);
+ 
+receiver #(.BYTE_WIDTH(BYTE_WIDTH)) receiver_i(
+.clk(clk),
+.arst_n(arst_n),
+.tick(tick),
+.rx(rx), // RX CONNECTED TO THE TX FROM THE TRANSMITTER MODULE
+.rx_done(rx_done),
+.data_out(uart_byte)
+);
+
+instruction_memory #(.BYTE_WIDTH(BYTE_WIDTH), .ADDR_WIDTH(ADDR_WIDTH), .MEM_DEPTH(MEM_DEPTH), .DATA_WIDTH(DATA_WIDTH)) instruction_memory_i(
+.clk(clk),
+.rd_addr(rdaddr),
+.rd_data(instruction_out),
+.data_in(shift_fsm_out),
+.wr_addr(wr_addr),
+.w_en(inst_rdy)
+);
+
 
 endmodule
-
-
-

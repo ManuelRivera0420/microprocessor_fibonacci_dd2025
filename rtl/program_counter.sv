@@ -27,7 +27,9 @@ module program_counter #(parameter DATA_WIDTH = 32) (
             pc_out <= pc_in;
         end     
     end 
-assign prog_ack = (pc_in == pc_out) ? 1'b1 : 1'b0;   
+	
+assign prog_ack = (pc_in == pc_out) ? 1'b1 : 1'b0;
+   
 endmodule
 
 

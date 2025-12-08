@@ -15,7 +15,7 @@ module mux_3_to_1 (
     input logic [1:0] sel,
     output logic [31:0] data_out
     );
-`include "defines.svh"  
+`include "defines.sv"  
 always_comb begin   
     case (sel)
         ALU_TO_PRF: begin 
