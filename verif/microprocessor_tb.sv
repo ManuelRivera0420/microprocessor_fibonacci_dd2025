@@ -139,12 +139,6 @@ module microprocessor_tb ();
                          equal ? "SALTO TOMADO" : "SALTO NO TOMADO");
                 end else begin
                     count_beq_g = count_beq_g + 1;
-//                  $display("BEQ OK → x%0d(%h) %s x%0d(%h) -> %s -> PC: %d -> %d",
-//                           rs1, rs1,
-//                           equal ? "==" : "!=",
-//                           rs2, rs2,
-//                           equal ? "TOMADO    " : "NO TOMADO ",
-//                           pc_before, `PC_PATH.pc);
                 end 
 		    end
         
@@ -162,9 +156,6 @@ module microprocessor_tb ();
                 if ($signed(`PC_PATH.pc) !== rd_expected) begin
                   $error("ERROR JAL: Salto incorrecto!\n   PC actual = %d\n   Esperado    = PC(%d) + imm(%0d) = %d",
                          $signed(`PC_PATH.pc), pc_before, imm_check, rd_expected);
-                end else begin
-                  $display("JAL correcto: salto de %d -> %d (imm=%0d)", pc_before, $signed(`PC_PATH.pc), imm_check);
-                end
                 if (`BANK_REG_PATH.write_dir !== rd) begin
                   $error("ERROR JAL: write_dir = %0d, esperado rd=%0d", `BANK_REG_PATH.write_dir, rd);
                 end
@@ -173,8 +164,6 @@ module microprocessor_tb ();
                          `BANK_REG_PATH.write_data, pc_before + 4);
                 end else begin
                     count_jal_g = count_jal_g + 1;
-//                  $display("JAL correcto: guardó PC+4 = %h en x%0d", pc_before + 4, rd);
-//                end
 		          end
 		    end
       endcase  
