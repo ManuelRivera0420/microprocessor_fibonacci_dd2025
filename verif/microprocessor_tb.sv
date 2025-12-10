@@ -1,16 +1,16 @@
 module microprocessor_tb ();
 
- `include "defines.svh"
+// `include "defines.svh"
     
     bit clk;
     bit arst_n;
     
-    // para el testbench
+    // para el testbench (randomizados)
     logic [DIR_WIDTH-1:0] rd, rs1, rs2;
     logic [12:0] imm_bq;
     logic [20:0] imm_jal;
     
-    logic [DATA_WIDTH-1:0] instruction_tb_addi, instruction_tb_add, instruction_tb_beq, instruction_tb_jal;
+    logic [DATA_WIDTH-1:0] instruction_tb, instruction_tb_addi, instruction_tb_add, instruction_tb_beq, instruction_tb_jal;
     logic [DIR_WIDTH-1:0] rd_tb, rs1_tb, rs2_tb;
     logic [11:0] imm_tb;  
 
@@ -125,17 +125,17 @@ module microprocessor_tb ();
                 pc_before = $signed(`PC_PATH.pc);
                 equal = (rs1 == rs2);
                 imm_check = $signed({imm_bq[12], imm_bq[10:5], imm_bq[4:1], imm_bq[11], 1'b0});
-                beq_taken = pc_before + imm_check;
-                beq_notaken = pc_before + 4;
-                rd_expected = equal ? beq_taken : beq_notaken;
+                beq_taken = $signed(pc_before) + imm_check;
+                beq_notaken = $signed(pc_before) + 4;
+                rd_expected = equal ? $signed(beq_taken) : $signed(beq_notaken);
                 count_beq = count_beq + 1;
                 @(posedge clk);
-                if ($signed(`PC_PATH.pc) !== rd_expected) begin
+                if ($signed(`PC_PATH.pc) !== $signed(rd_expected)) begin
                   $error("ERROR BEQ FALLÓ!\n  PC actual     = %d \n   PC anterior    = %d \n %d, %d -> condición: %0s\n   Inmediato B    = %0d (%b)\n  Esperado       = %d  (%0s)",
-                         $signed(`PC_PATH.pc), pc_before,
+                         $signed(`PC_PATH.pc), $signed(pc_before),
                          rs1, rs2, equal ? "IGUALES -> TOMADO" : "DIFERENTES -> NO TOMADO",
-                         imm_check, imm_bq,
-                         rd_expected,
+                         $signed(imm_check), $signed(imm_bq),
+                         $signed(rd_expected),
                          equal ? "SALTO TOMADO" : "SALTO NO TOMADO");
                 end else begin
                     count_beq_g = count_beq_g + 1;
@@ -150,18 +150,19 @@ module microprocessor_tb ();
                 instruction_tb_jal = tbprocessor_if.instruction;
                 pc_before = $signed(`PC_PATH.pc);
                 imm_check = $signed({{12{imm_jal[20]}}, imm_jal[20:0], 1'b0});
-                rd_expected = pc_before + imm_check;
+                rd_expected = $signed(pc_before) + $signed(imm_check);
                 count_jal = count_jal + 1;
                 @(posedge clk);
-                if ($signed(`PC_PATH.pc) !== rd_expected) begin
+                if ($signed(`PC_PATH.pc) !== $signed(rd_expected)) begin
                   $error("ERROR JAL: Salto incorrecto!\n   PC actual = %d\n   Esperado    = PC(%d) + imm(%0d) = %d",
-                         $signed(`PC_PATH.pc), pc_before, imm_check, rd_expected);
-                if (`BANK_REG_PATH.write_dir !== rd) begin
-                  $error("ERROR JAL: write_dir = %0d, esperado rd=%0d", `BANK_REG_PATH.write_dir, rd);
+                         $signed(`PC_PATH.pc), $signed(pc_before), $signed(imm_check), $signed(rd_expected));
+                end 
+                if ($signed(`BANK_REG_PATH.write_dir) !== $signed(rd_expected)) begin
+                  $error("ERROR JAL: write_dir = %0d, esperado rd=%0d", $signed(`BANK_REG_PATH.write_dir), $signed(rd_expected));
                 end
-                if (`BANK_REG_PATH.write_data !== pc_before + 4) begin
+                if ($signed(`BANK_REG_PATH.write_data) !== $signed(pc_before) + 4) begin
                   $error("ERROR JAL: No guardó PC+4 en rd!\n   Escrito = %d\n   Esperado = PC+4 = %d",
-                         `BANK_REG_PATH.write_data, pc_before + 4);
+                         $signed(`BANK_REG_PATH.write_data), $signed(pc_before) + 4);
                 end else begin
                     count_jal_g = count_jal_g + 1;
 		          end
