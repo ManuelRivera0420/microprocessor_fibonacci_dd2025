@@ -21,16 +21,13 @@ module program_counter #(parameter DATA_WIDTH = 32) (
     always_ff @(posedge clk, negedge arst_n) begin
         if (!arst_n) begin
             pc_out <= 32'h0000_0000;
-        end else if(prog_ready) begin
+        end else if(prog_ready) begin   //UART pulse whe the instructions memory has the program ready
             pc_out <= pc_in;
         end else begin
-            pc_out <= pc_out;
+            pc_out <= pc_out; //Don't change the instruction
         end     
     end 
 	
-assign prog_ack = (pc_in == pc_out) ? 1'b1 : 1'b0;
+assign prog_ack = (pc_in == pc_out) ? 1'b1 : 1'b0; //If the next instruction is exactly same as actual instruction then program is done
    
 endmodule
-
-
-
