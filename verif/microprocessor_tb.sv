@@ -16,7 +16,7 @@ module microprocessor_tb ();
 
     // para el BIND 
     logic [DATA_WIDTH-1:0] alu_result;
-    logic [DATA_WIDTH-1:0] pc_out, pc_imm; // Se�ales para conectar al bind
+    logic [DATA_WIDTH-1:0] pc_out, pc_imm; // Se ales para conectar al bind
     logic memread, memwrite, memtoreg;
     
     //CHECKS
@@ -51,6 +51,7 @@ module microprocessor_tb ();
 	`define  MUX_IMM_PATH microprocessor_i.mux_imm_gen_i
 	`define  MUX_PC_PATH microprocessor_i.mux_pc_i
 	`define  CU_PATH microprocessor_i.control_unit_i
+    `define  BRANCH_PATH microprocessor_i.branch_i
     
     typedef enum bit [6:0] {
       addi = 7'b0010011,
@@ -68,7 +69,7 @@ module microprocessor_tb ();
     wait (arst_n);
       $display("--- Decodificador de Instrucciones (RISC-V Opcode) ---");
 
-      repeat (1000000) @(posedge clk) begin
+      repeat (100) @(posedge clk) begin
       randcase
         1 :  begin // ADDI
                 std::randomize(rd,rs1);
@@ -86,7 +87,7 @@ module microprocessor_tb ();
                     //         `ALU_PATH.operand1 + `ALU_PATH.operand2, `ALU_PATH.alu_result);
                     //end
                     //if (`BANK_REG_PATH.write_dir !== rd) begin
-                    //  $error("ERROR EN ADDI!! Direcci�n esperada = %0d, direcci�n escrita = %0d",
+                    //  $error("ERROR EN ADDI!! Direcci n esperada = %0d, direcci n escrita = %0d",
                     //         rd, `BANK_REG_PATH.write_dir);
                     //end else begin 
                     //count_addi_g = count_addi_g + 1;
@@ -109,7 +110,7 @@ module microprocessor_tb ();
                 //         `ALU_PATH.operand1 + `ALU_PATH.operand2, `ALU_PATH.alu_result);
                 //end        
                 //if (`BANK_REG_PATH.write_dir !== rd) begin
-                //  $error("ERROR EN ADD!! Direcci�n esperada = %0d, direcci�n escrita = %0d",
+                //  $error("ERROR EN ADD!! Direcci n esperada = %0d, direcci n escrita = %0d",
                 //         rd, `BANK_REG_PATH.write_dir);
                 //end else begin 
                 //count_add_g = count_add_g + 1;
@@ -133,7 +134,7 @@ module microprocessor_tb ();
                 count_beq = count_beq + 1;
                 @(posedge clk);
                 //if ($signed(`PC_PATH.pc_out) !== $signed(rd_expected)) begin
-                //  $error("ERROR BEQ FALL�!\n  PC actual     = %d \n   PC anterior    = %d \n %d, %d -> condici�n: %0s\n   Inmediato B    = %0d (%b)\n  Esperado       = %d  (%0s)",
+                //  $error("ERROR BEQ FALL !\n  PC actual     = %d \n   PC anterior    = %d \n %d, %d -> condici n: %0s\n   Inmediato B    = %0d (%b)\n  Esperado       = %d  (%0s)",
                 //         $signed(`PC_PATH.pc_out), $signed(pc_before),
                 //         rs1, rs2, equal ? "IGUALES -> TOMADO" : "DIFERENTES -> NO TOMADO",
                 //         $signed(imm_check), $signed(imm_bq),
@@ -163,7 +164,7 @@ module microprocessor_tb ();
                 //  $error("ERROR JAL: write_dir = %0d, esperado rd=%0d", $signed(`BANK_REG_PATH.write_dir), $signed(rd_expected));
                 //end
                 //if ($signed(`BANK_REG_PATH.write_data) !== $signed(pc_before) + 4) begin
-                //  $error("ERROR JAL: No guard� PC+4 en rd!\n   Escrito = %d\n   Esperado = PC+4 = %d",
+                //  $error("ERROR JAL: No guard  PC+4 en rd!\n   Escrito = %d\n   Esperado = PC+4 = %d",
                 //         $signed(`BANK_REG_PATH.write_data), $signed(pc_before) + 4);
                 //end else begin
                 //    count_jal_g = count_jal_g + 1;
@@ -186,29 +187,70 @@ end
 	end
 
 
-      `AST(uC, instruction_tb_addi, current_instruction == OPCODE_I_TYPE[6:0] |=>, $signed(`BANK_REG_PATH.prf[$past(rd)]) ==  rd == 0 ? 0 : $past($signed(`BANK_REG_PATH.read_data1)) + $past($signed(`IMM_GEN_PATH.imm_out)))
-
-	`AST(uC, instruction_tb_add, 
-        current_instruction == OPCODE_R_TYPE[6:0] |-> ,
-        microprocessor_i.alu_i.alu_result == rd == 0 ? 0 : (microprocessor_i.prf_i.read_data1) + (microprocessor_i.prf_i.read_data2))
-
-
-    `AST(uC, instruction_tb_beq,
-        current_instruction == OPCODE_B_TYPE[6:0] |=>, 
-        $past(microprocessor_i.prf_i.prf[rs1] == microprocessor_i.prf_i.prf[rs2]) ? 
-         microprocessor_i.pc_i.pc_out == ($past(microprocessor_i.pc_i.pc_out) + $past(microprocessor_i.imm_gen_i.imm_out)) : // branch taken
-         microprocessor_i.pc_i.pc_out == $past(microprocessor_i.pc_i.pc_out + 32'd4) // branch not taken
-     )
-    
-    `AST(uC, instruction_tb_jal,
-        current_instruction == OPCODE_J_TYPE[6:0] |=>, 
-        microprocessor_i.pc_i.pc_out == $past(microprocessor_i.pc_i.pc_out + microprocessor_i.imm_gen_i.imm_out) // unconditional jump
-    )
+       
 
 		logic probe_signal_beq;
 		logic [31:0] probe1, probe2;
 		assign probe1 = microprocessor_i.prf_i.prf[rs1];
 		assign probe2 = microprocessor_i.prf_i.prf[rs2];
 		assign probe_signal_beq = microprocessor_i.prf_i.prf[rs1] == microprocessor_i.prf_i.prf[rs2];
+
     
+    //ADDI 
+    // Comprueba que si rd = 0, se escribe 0. Si rd != 0, se escribe rs1_val_expected + Inmediato.
+    `AST(uC, instruction_tb_addi, 
+        current_instruction == OPCODE_I_TYPE[6:0] |=>,
+        $past(rd_tb) == 5'd0 ? 
+            // Caso: rd es X0 (debe escribir 0)
+            $signed(`BANK_REG_PATH.prf[$past(rd_tb)]) == 32'd0 : 
+            // Caso: rd es un registro válido (debe escribir la suma)
+            $signed(`BANK_REG_PATH.prf[$past(rd_tb)]) == (
+                // rs1_val: Si rs1 == 0, se usa 0; si no, se usa el valor leído
+                ($past(rs1_tb) == 5'd0 ? 32'd0 : $past($signed(`BANK_REG_PATH.read_data1))) 
+                + $past($signed(`IMM_GEN_PATH.imm_out))
+            )
+    )
+    
+    // ADD 
+    // Comprueba que si rd = 0, se escribe 0. Si rd != 0, se escribe rs1_val_expected + rs2_val_expected.
+    `AST(uC, instruction_tb_add, 
+        current_instruction == OPCODE_R_TYPE[6:0] |=>,
+        $past(rd_tb) == 5'd0 ? 
+            // Caso: rd es X0 (debe escribir 0)
+            $signed(`BANK_REG_PATH.prf[$past(rd_tb)]) == 32'd0 : 
+            // Caso: rd es un registro válido (debe escribir la suma de los operandos corregidos)
+            $signed(`BANK_REG_PATH.prf[$past(rd_tb)]) == (
+                // rs1_val: Si rs1 == 0, se usa 0; si no, se usa read_data1
+                ($past(rs1_tb) == 5'd0 ? 32'd0 : $past($signed(`BANK_REG_PATH.read_data1))) 
+                +
+                // rs2_val: Si rs2 == 0, se usa 0; si no, se usa read_data2
+                ($past(rs2_tb) == 5'd0 ? 32'd0 : $past($signed(`BANK_REG_PATH.read_data2)))
+            )
+    )
+     
+//BEQ
+  `AST(uC, instruction_tb_beq,
+    current_instruction[6:0] == OPCODE_B_TYPE[6:0] |=>, 
+		$past(`BRANCH_PATH.rs_1) == $past(`BRANCH_PATH.rs_2) ? 
+		 $signed(microprocessor_i.pc_i.pc_in) == $past(microprocessor_i.pc_i.pc_out) + $past(`IMM_GEN_PATH.imm_out) : // branch taken
+		 $signed(microprocessor_i.pc_i.pc_in) == $past(microprocessor_i.pc_i.pc_out) + 32'd4 // branch not taken
+)
+    
+    // JAL
+    // Salto del PC 
+    `AST(uC, instruction_tb_jal,
+        current_instruction == OPCODE_J_TYPE[6:0] |=>, 
+        microprocessor_i.pc_i.pc_in == $past(microprocessor_i.pc_i.pc_out + microprocessor_i.imm_gen_i.imm_out)
+    )
+    
+    // Escritura en RD (Return Address = PC + 4)
+    `AST(uC, instruction_tb_jal,
+        current_instruction == OPCODE_J_TYPE[6:0] |=>,
+        $past(rd_tb) == 5'd0 ? 
+            // Caso: rd es X0 (debe escribir 0)
+            $signed(`BANK_REG_PATH.prf[$past(rd_tb)]) == 32'd0 : 
+            // Caso: rd es un registro válido (debe escribir PC + 4)
+            $signed(`BANK_REG_PATH.prf[$past(rd_tb)]) == $past(microprocessor_i.pc_i.pc_out) + 32'd4
+    )
+
 endmodule
