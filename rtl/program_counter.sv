@@ -24,7 +24,7 @@ module program_counter #(parameter DATA_WIDTH = 32) (
         end else if(prog_ready) begin
             pc_out <= pc_in;
         end else begin
-            pc_out <= pc_in;
+            pc_out <= pc_out;
         end     
     end 
 	

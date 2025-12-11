@@ -10,7 +10,7 @@ parameter BAUD_SEL_SIZE = 3;
 
 localparam BANK_DEPTH = MEM_DEPTH / 4; // 256 renglones por banco
 ///////////////////TYPE_R_INSTRUCTIONS////////////////////// 
-localparam OPCODE_R_TYPE = 7'b0110011;	//Type R-Instruction
+localparam OPCODE_R_TYPE = 7'b0110011;	//Type R-Instruction  ---51
 //TYPES OF OPERATIONS
 localparam ADD   = 3'b000;
 localparam SLL   = 3'b001;
@@ -23,7 +23,7 @@ localparam AND_  = 3'b111;
 localparam SRA   = 3'b101;
 localparam SUB   = 3'b000;
 ///////////////////TYPE_I_INSTRUCTIONS////////////////////// 
-localparam OPCODE_I_TYPE = 7'b0010011;	//Type I-Instruction
+localparam OPCODE_I_TYPE = 7'b0010011;	//Type I-Instruction ----19
 //TYPES OF OPERATION
 localparam ADDI  = 3'b000; //rd = rs1 + imm
 localparam SLTI  = 3'b010; //rd = (rs1 < imm) signed
@@ -33,11 +33,11 @@ localparam ORI   = 3'b110; //rd = rs1 OR imm
 localparam ANDI  = 3'b111; //rd = rs1 AND imm`
 ////////////////////////////////////////////////////////////
 ///////////////////TYPE_B_INSTRUCTIONS////////////////////// 
-localparam OPCODE_B_TYPE = 7'b1100011;	//Type B-Instruction
+localparam OPCODE_B_TYPE = 7'b1100011;	//Type B-Instruction  ----99
 //TYPES OF OPERATION
 localparam BEQ = 3'b000;
 ///////////////////TYPE_I_INSTRUCTIONS//////////////////////
-localparam OPCODE_J_TYPE = 7'b1101111;	//Type J-Instruction
+localparam OPCODE_J_TYPE = 7'b1101111;	//Type J-Instruction ----111
 //TYPES OF OPERATION
 //TODO define thhe operations
 
