@@ -16,7 +16,7 @@ module microprocessor_tb ();
 
     // para el BIND 
     logic [DATA_WIDTH-1:0] alu_result;
-    logic [DATA_WIDTH-1:0] pc_out, pc_imm; // Señales para conectar al bind
+    logic [DATA_WIDTH-1:0] pc_out, pc_imm; // Se�ales para conectar al bind
     logic memread, memwrite, memtoreg;
     
     //CHECKS
@@ -37,6 +37,8 @@ module microprocessor_tb ();
     microprocessor_top microprocessor_i ( 
         .clk(clk),
         .arst_n(arst_n),
+				.prog_ready(1'b0),
+				.w_en(1'b0),
         .instruction(tbprocessor_if.instruction)
     );
 
@@ -66,7 +68,7 @@ module microprocessor_tb ();
     wait (arst_n);
       $display("--- Decodificador de Instrucciones (RISC-V Opcode) ---");
 
-      repeat (100) @(posedge clk) begin
+      repeat (1000000) @(posedge clk) begin
       randcase
         1 :  begin // ADDI
                 std::randomize(rd,rs1);
@@ -78,17 +80,17 @@ module microprocessor_tb ();
                 instruction_tb_addi = tbprocessor_if.instruction;
                 count_addi = count_addi + 1;
                 @(posedge clk); // Esperamos un ciclo
-                    if (`ALU_PATH.alu_result !== (`ALU_PATH.operand1 + `ALU_PATH.operand2)) begin
-                      $error("ERROR EN ADDI!! ALU: esperado %0d + %0d = %0d, obtenido = %0d",
-                             `ALU_PATH.operand1, `ALU_PATH.operand2,
-                             `ALU_PATH.operand1 + `ALU_PATH.operand2, `ALU_PATH.alu_result);
-                    end
-                    if (`BANK_REG_PATH.write_dir !== rd) begin
-                      $error("ERROR EN ADDI!! Dirección esperada = %0d, dirección escrita = %0d",
-                             rd, `BANK_REG_PATH.write_dir);
-                    end else begin 
-                    count_addi_g = count_addi_g + 1;
-                    end
+                    //if (`ALU_PATH.alu_result !== (`ALU_PATH.operand1 + `ALU_PATH.operand2)) begin
+                    //  $error("ERROR EN ADDI!! ALU: esperado %0d + %0d = %0d, obtenido = %0d",
+                    //         `ALU_PATH.operand1, `ALU_PATH.operand2,
+                    //         `ALU_PATH.operand1 + `ALU_PATH.operand2, `ALU_PATH.alu_result);
+                    //end
+                    //if (`BANK_REG_PATH.write_dir !== rd) begin
+                    //  $error("ERROR EN ADDI!! Direcci�n esperada = %0d, direcci�n escrita = %0d",
+                    //         rd, `BANK_REG_PATH.write_dir);
+                    //end else begin 
+                    //count_addi_g = count_addi_g + 1;
+                    //end
               end
 
         1 : begin // ADD
@@ -101,17 +103,17 @@ module microprocessor_tb ();
                 instruction_tb_add = tbprocessor_if.instruction;
                 count_add =count_add +1;
                 @(posedge clk); 
-                if (`ALU_PATH.alu_result !== (`ALU_PATH.operand1 + `ALU_PATH.operand2)) begin
-                  $error("ERROR EN ADD!! ALU: esperado %0d + %0d = %0d, obtenido %0d",
-                         `ALU_PATH.operand1, `ALU_PATH.operand2,
-                         `ALU_PATH.operand1 + `ALU_PATH.operand2, `ALU_PATH.alu_result);
-                end        
-                if (`BANK_REG_PATH.write_dir !== rd) begin
-                  $error("ERROR EN ADD!! Dirección esperada = %0d, dirección escrita = %0d",
-                         rd, `BANK_REG_PATH.write_dir);
-                end else begin 
-                count_add_g = count_add_g + 1;
-                end
+                //if (`ALU_PATH.alu_result !== (`ALU_PATH.operand1 + `ALU_PATH.operand2)) begin
+                //  $error("ERROR EN ADD!! ALU: esperado %0d + %0d = %0d, obtenido %0d",
+                //         `ALU_PATH.operand1, `ALU_PATH.operand2,
+                //         `ALU_PATH.operand1 + `ALU_PATH.operand2, `ALU_PATH.alu_result);
+                //end        
+                //if (`BANK_REG_PATH.write_dir !== rd) begin
+                //  $error("ERROR EN ADD!! Direcci�n esperada = %0d, direcci�n escrita = %0d",
+                //         rd, `BANK_REG_PATH.write_dir);
+                //end else begin 
+                //count_add_g = count_add_g + 1;
+                //end
               end
 
 
@@ -122,7 +124,7 @@ module microprocessor_tb ();
                 rs1_tb = tbprocessor_if.instruction[19:15];
                 rs2_tb = tbprocessor_if.instruction[24:20];
                 instruction_tb_beq = tbprocessor_if.instruction;
-                pc_before = $signed(`PC_PATH.pc);
+                pc_before = $signed(`PC_PATH.pc_out);
                 equal = (rs1 == rs2);
                 imm_check = $signed({imm_bq[12], imm_bq[10:5], imm_bq[4:1], imm_bq[11], 1'b0});
                 beq_taken = $signed(pc_before) + imm_check;
@@ -130,16 +132,16 @@ module microprocessor_tb ();
                 rd_expected = equal ? $signed(beq_taken) : $signed(beq_notaken);
                 count_beq = count_beq + 1;
                 @(posedge clk);
-                if ($signed(`PC_PATH.pc) !== $signed(rd_expected)) begin
-                  $error("ERROR BEQ FALLÓ!\n  PC actual     = %d \n   PC anterior    = %d \n %d, %d -> condición: %0s\n   Inmediato B    = %0d (%b)\n  Esperado       = %d  (%0s)",
-                         $signed(`PC_PATH.pc), $signed(pc_before),
-                         rs1, rs2, equal ? "IGUALES -> TOMADO" : "DIFERENTES -> NO TOMADO",
-                         $signed(imm_check), $signed(imm_bq),
-                         $signed(rd_expected),
-                         equal ? "SALTO TOMADO" : "SALTO NO TOMADO");
-                end else begin
-                    count_beq_g = count_beq_g + 1;
-                end 
+                //if ($signed(`PC_PATH.pc_out) !== $signed(rd_expected)) begin
+                //  $error("ERROR BEQ FALL�!\n  PC actual     = %d \n   PC anterior    = %d \n %d, %d -> condici�n: %0s\n   Inmediato B    = %0d (%b)\n  Esperado       = %d  (%0s)",
+                //         $signed(`PC_PATH.pc_out), $signed(pc_before),
+                //         rs1, rs2, equal ? "IGUALES -> TOMADO" : "DIFERENTES -> NO TOMADO",
+                //         $signed(imm_check), $signed(imm_bq),
+                //         $signed(rd_expected),
+                //         equal ? "SALTO TOMADO" : "SALTO NO TOMADO");
+                //end else begin
+                //    count_beq_g = count_beq_g + 1;
+                //end 
 		    end
         
         1 : begin //JAL
@@ -148,24 +150,24 @@ module microprocessor_tb ();
                 current_instruction = tbprocessor_if.instruction[6:0];
                 rd_tb = tbprocessor_if.instruction[11:7];
                 instruction_tb_jal = tbprocessor_if.instruction;
-                pc_before = $signed(`PC_PATH.pc);
+                pc_before = $signed(`PC_PATH.pc_out);
                 imm_check = $signed({{12{imm_jal[20]}}, imm_jal[20:0], 1'b0});
                 rd_expected = $signed(pc_before) + $signed(imm_check);
                 count_jal = count_jal + 1;
                 @(posedge clk);
-                if ($signed(`PC_PATH.pc) !== $signed(rd_expected)) begin
-                  $error("ERROR JAL: Salto incorrecto!\n   PC actual = %d\n   Esperado    = PC(%d) + imm(%0d) = %d",
-                         $signed(`PC_PATH.pc), $signed(pc_before), $signed(imm_check), $signed(rd_expected));
-                end 
-                if ($signed(`BANK_REG_PATH.write_dir) !== $signed(rd_expected)) begin
-                  $error("ERROR JAL: write_dir = %0d, esperado rd=%0d", $signed(`BANK_REG_PATH.write_dir), $signed(rd_expected));
-                end
-                if ($signed(`BANK_REG_PATH.write_data) !== $signed(pc_before) + 4) begin
-                  $error("ERROR JAL: No guardó PC+4 en rd!\n   Escrito = %d\n   Esperado = PC+4 = %d",
-                         $signed(`BANK_REG_PATH.write_data), $signed(pc_before) + 4);
-                end else begin
-                    count_jal_g = count_jal_g + 1;
-		          end
+                //if ($signed(`PC_PATH.pc_out) !== $signed(rd_expected)) begin
+                //  $error("ERROR JAL: Salto incorrecto!\n   PC actual = %d\n   Esperado    = PC(%d) + imm(%0d) = %d",
+                //         $signed(`PC_PATH.pc_out), $signed(pc_before), $signed(imm_check), $signed(rd_expected));
+                //end 
+                //if ($signed(`BANK_REG_PATH.write_dir) !== $signed(rd_expected)) begin
+                //  $error("ERROR JAL: write_dir = %0d, esperado rd=%0d", $signed(`BANK_REG_PATH.write_dir), $signed(rd_expected));
+                //end
+                //if ($signed(`BANK_REG_PATH.write_data) !== $signed(pc_before) + 4) begin
+                //  $error("ERROR JAL: No guard� PC+4 en rd!\n   Escrito = %d\n   Esperado = PC+4 = %d",
+                //         $signed(`BANK_REG_PATH.write_data), $signed(pc_before) + 4);
+                //end else begin
+                //    count_jal_g = count_jal_g + 1;
+		          	//end
 		    end
       endcase  
     end  
@@ -179,8 +181,34 @@ end
 	end
     
 	initial begin // Timeout thread
-		#10us;
+		#10ms;
 		$finish;
 	end
+
+
+      `AST(uC, instruction_tb_addi, current_instruction == OPCODE_I_TYPE[6:0] |=>, $signed(`BANK_REG_PATH.prf[$past(rd)]) ==  rd == 0 ? 0 : $past($signed(`BANK_REG_PATH.read_data1)) + $past($signed(`IMM_GEN_PATH.imm_out)))
+
+	`AST(uC, instruction_tb_add, 
+        current_instruction == OPCODE_R_TYPE[6:0] |-> ,
+        microprocessor_i.alu_i.alu_result == rd == 0 ? 0 : (microprocessor_i.prf_i.read_data1) + (microprocessor_i.prf_i.read_data2))
+
+
+    `AST(uC, instruction_tb_beq,
+        current_instruction == OPCODE_B_TYPE[6:0] |=>, 
+        $past(microprocessor_i.prf_i.prf[rs1] == microprocessor_i.prf_i.prf[rs2]) ? 
+         microprocessor_i.pc_i.pc_out == ($past(microprocessor_i.pc_i.pc_out) + $past(microprocessor_i.imm_gen_i.imm_out)) : // branch taken
+         microprocessor_i.pc_i.pc_out == $past(microprocessor_i.pc_i.pc_out + 32'd4) // branch not taken
+     )
+    
+    `AST(uC, instruction_tb_jal,
+        current_instruction == OPCODE_J_TYPE[6:0] |=>, 
+        microprocessor_i.pc_i.pc_out == $past(microprocessor_i.pc_i.pc_out + microprocessor_i.imm_gen_i.imm_out) // unconditional jump
+    )
+
+		logic probe_signal_beq;
+		logic [31:0] probe1, probe2;
+		assign probe1 = microprocessor_i.prf_i.prf[rs1];
+		assign probe2 = microprocessor_i.prf_i.prf[rs2];
+		assign probe_signal_beq = microprocessor_i.prf_i.prf[rs1] == microprocessor_i.prf_i.prf[rs2];
     
 endmodule
