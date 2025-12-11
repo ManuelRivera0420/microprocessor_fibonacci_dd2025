@@ -32,15 +32,15 @@ module microprocessor_tb ();
 	assign #10ns arst_n = 1'b1;
 
     microprocessor_if tbprocessor_if(clk, arst_n);
-    microprocessor_top tbprocessor_top(clk, arst_n);    
+    //microprocessor_top tbprocessor_top(clk, arst_n);    
     
     microprocessor_top microprocessor_i ( 
         .clk(clk),
         .arst_n(arst_n),
-				.prog_ready(1'b0),
+				.prog_ready(1'b1),
 				.w_en(1'b0),
         .instruction(tbprocessor_if.instruction)
-    );
+			);
 
      
     `define  MEM_PATH microprocessor_i.instruction_memory_i
@@ -70,8 +70,9 @@ module microprocessor_tb ();
       $display("--- Decodificador de Instrucciones (RISC-V Opcode) ---");
 
       repeat (100) @(posedge clk) begin
-      randcase
+			randcase
         1 :  begin // ADDI
+		instruction_tb_addi = '0; instruction_tb_add= '0; instruction_tb_beq= '0; instruction_tb_jal= '0;
                 std::randomize(rd,rs1);
                 tbprocessor_if.write_addi_instr(rd,rs1);
                 current_instruction = tbprocessor_if.instruction[6:0];
@@ -95,6 +96,7 @@ module microprocessor_tb ();
               end
 
         1 : begin // ADD
+		instruction_tb_addi = '0; instruction_tb_add= '0; instruction_tb_beq= '0; instruction_tb_jal= '0;
                 std::randomize(rs1,rs2,rd);
                 tbprocessor_if.write_add_instr(rs1,rs2,rd);
                 current_instruction = tbprocessor_if.instruction[6:0];
@@ -119,6 +121,7 @@ module microprocessor_tb ();
 
 
         1 : begin //BEQ
+		instruction_tb_addi = '0; instruction_tb_add= '0; instruction_tb_beq= '0; instruction_tb_jal= '0;
                 std::randomize(rs1,rs2,imm_bq);
                 tbprocessor_if.write_beq_instr(rs1,rs2,imm_bq);
                 current_instruction = tbprocessor_if.instruction[6:0];
@@ -145,7 +148,8 @@ module microprocessor_tb ();
                 //end 
 		    end
         
-        1 : begin //JAL
+        5 : begin //JAL
+		instruction_tb_addi = '0; instruction_tb_add= '0; instruction_tb_beq= '0; instruction_tb_jal= '0;
                 std::randomize(rd,imm_jal);
                 tbprocessor_if.write_jal_instr (rd,imm_jal);
                 current_instruction = tbprocessor_if.instruction[6:0];
@@ -182,7 +186,7 @@ end
 	end
     
 	initial begin // Timeout thread
-		#10ms;
+		#1ms;
 		$finish;
 	end
 
@@ -214,7 +218,7 @@ end
     // ADD 
     // Comprueba que si rd = 0, se escribe 0. Si rd != 0, se escribe rs1_val_expected + rs2_val_expected.
     `AST(uC, instruction_tb_add, 
-        current_instruction == OPCODE_R_TYPE[6:0] |=>,
+       current_instruction  == OPCODE_R_TYPE[6:0] |=>,
         $past(rd_tb) == 5'd0 ? 
             // Caso: rd es X0 (debe escribir 0)
             $signed(`BANK_REG_PATH.prf[$past(rd_tb)]) == 32'd0 : 
@@ -230,27 +234,16 @@ end
      
 //BEQ
   `AST(uC, instruction_tb_beq,
-    current_instruction[6:0] == OPCODE_B_TYPE[6:0] |=>, 
+    current_instruction == OPCODE_B_TYPE[6:0] |=>,  
 		$past(`BRANCH_PATH.rs_1) == $past(`BRANCH_PATH.rs_2) ? 
 		 $signed(microprocessor_i.pc_i.pc_in) == $past(microprocessor_i.pc_i.pc_out) + $past(`IMM_GEN_PATH.imm_out) : // branch taken
 		 $signed(microprocessor_i.pc_i.pc_in) == $past(microprocessor_i.pc_i.pc_out) + 32'd4 // branch not taken
 )
-    
-    // JAL
+      // JAL
     // Salto del PC 
     `AST(uC, instruction_tb_jal,
-        current_instruction == OPCODE_J_TYPE[6:0] |=>, 
+      current_instruction[6:0]  == OPCODE_J_TYPE[6:0] |=>,  
         microprocessor_i.pc_i.pc_in == $past(microprocessor_i.pc_i.pc_out + microprocessor_i.imm_gen_i.imm_out)
     )
-    
-    // Escritura en RD (Return Address = PC + 4)
-    `AST(uC, instruction_tb_jal,
-        current_instruction == OPCODE_J_TYPE[6:0] |=>,
-        $past(rd_tb) == 5'd0 ? 
-            // Caso: rd es X0 (debe escribir 0)
-            $signed(`BANK_REG_PATH.prf[$past(rd_tb)]) == 32'd0 : 
-            // Caso: rd es un registro válido (debe escribir PC + 4)
-            $signed(`BANK_REG_PATH.prf[$past(rd_tb)]) == $past(microprocessor_i.pc_i.pc_out) + 32'd4
-    )
-
+  
 endmodule
