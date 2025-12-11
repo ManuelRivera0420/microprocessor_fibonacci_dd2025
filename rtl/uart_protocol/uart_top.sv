@@ -8,7 +8,7 @@
 // Module Name: uart_top
 //////////////////////////////////////////////////////////////////////////////////
 
-`include "../defines.svh"
+//`include "../defines.svh"
 
 module uart_top (
     input logic clk,

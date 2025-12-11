@@ -1,56 +1,97 @@
+import tkinter as tk
+from tkinter import messagebox
 import serial
 import time
 
-port = 'COM3'
-baudrate = 9600
-timeout = 0.1
 
-try:
-    ser = serial.Serial(port, baudrate, timeout=timeout)
-    print(f"Opened {port}")
+def fibonacci(n):
+    n=n+2
+    serie = [0, 1]
+    for _ in range(2, n):
+        serie.append(serie[-1] + serie[-2])
 
-    time.sleep(0.05)
+    hex_result = format(serie[-1], 'x')
+    return serie[-1], hex_result
+
+
+def enviar_uart(imm):
+    port = 'COM4'
+    baudrate = 9600
+    timeout = 1
+
+    # Calcular partes del inmediato
+    imm_high = (imm & 0x0F) << 4
+    imm_low  = (imm >> 4) & 0xFF
 
     payload = [
-        b'\x93\x04\x00\x00',
-        b'\x93\x05\x00\x10',
-        b'\x93\x06\x00\x0A',
-        b'\x63\x0C\x06\x00',
-        b'\xB3\x0A\x00\x0B',
-        b'\xB3\x05\x00\x0B',
-        b'\xB3\x05\x00\x05',
-        b'\x93\x06\x00\xF6',
-        b'\x6F\x00\xFF\xDD',
-        b'\x6F\x00\x00\x00'
+        bytes([0x13, 0x05, 0x00, 0x00]),
+        bytes([0x93, 0x05, 0x10, 0x00]),
+        bytes([0x13, 0x06, imm_high, imm_low]),
+        bytes([0x63, 0x0C, 0x06, 0x00]),
+        bytes([0xB3, 0x02, 0xB5, 0x00]),
+        bytes([0x13, 0x85, 0x05, 0x00]),
+        bytes([0x93, 0x85, 0x02, 0x00]),
+        bytes([0x13, 0x06, 0xF6, 0xFF]),
+        bytes([0x6F, 0xF0, 0xDF, 0xFE]),
+        bytes([0x6F, 0x00, 0x00, 0x00])
     ]
 
-    # Número de instrucciones
-    ser.write(b'\x0A')
-    print("TX: 0A")
+    try:
+        ser = serial.Serial(port, baudrate, timeout=timeout)
+        time.sleep(0.05)
 
-    # Esperar eco de 0x0A (1 byte)
-    time.sleep(0.002)
-    echo = ser.read(ser.in_waiting or 1)
-    print("RX:", echo)
+        # Enviar número de instrucciones
+        ser.write(b'\x0A')
+        time.sleep(0.01)
 
-    # Enviar y recibir uno por uno
-    for frame in payload:
-        ser.write(frame)
-        print("TX:", frame)
+        for frame in payload:
+            ser.write(frame)
+            time.sleep(0.005)
 
-        # Le das chance al FPGA de procesar y hacer eco
-        time.sleep(0.002)
+        ser.close()
 
-        # Leer exactamente 4 bytes (tu frame)
-        echo = ser.read(4)
-        print("RX:", echo)
+    except Exception as e:
+        raise RuntimeError(f"UART ERROR: {e}")
 
-        # Si no recibes 4 bytes, lo mostramos igual para debug
-        if len(echo) != 4:
-            print("⚠ Eco incompleto")
 
-    ser.close()
-    print("Closed.")
+def calcular_fib():
+    """Callback del botón."""
+    try:
+        imm = int(entry.get())
+        if imm <= 0:
+            raise ValueError("El número debe ser positivo.")
 
-except Exception as e:
-    print("ERROR:", e)
+        # Calcular Fibonacci
+        fib_int, fib_hex = fibonacci(imm)
+
+        # Enviar UART
+        enviar_uart(imm)
+
+        messagebox.showinfo(
+            "Resultado",
+            f"Fibonacci({imm}) = {fib_int}\nHex: {fib_hex}\n\nUART enviado correctamente."
+        )
+
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
+
+
+# ============================================
+#   VENTANA PRINCIPAL
+# ============================================
+
+root = tk.Tk()
+root.title("Microprocesador Fibonacci")
+root.geometry("350x200")
+
+label = tk.Label(root, text="Iteración (n):", font=("Arial", 12))
+label.pack(pady=10)
+
+entry = tk.Entry(root, font=("Arial", 12), justify="center")
+entry.pack(pady=5)
+
+btn = tk.Button(root, text="Calcular y Enviar", font=("Arial", 12, "bold"),
+                command=calcular_fib, bg="#4CAF50", fg="white")
+btn.pack(pady=20)
+
+root.mainloop()
