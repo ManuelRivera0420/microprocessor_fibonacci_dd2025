@@ -55,29 +55,31 @@ set_location_assignment PIN_AG17 -to display[53]
 set_location_assignment PIN_AE17 -to display[54]
 set_location_assignment PIN_AD17 -to display[55]
 set_location_assignment PIN_AE15 -to rx
-set_location_assignment PIN_M23 -to arst_n
+set_location_assignment PIN_G19 -to rx_done
+set_location_assignment PIN_AB28 -to baud_sel[0]
+set_location_assignment PIN_AC28 -to baud_sel[1]
+set_location_assignment PIN_AC27 -to baud_sel[2]
+set_location_assignment PIN_M21 -to arst_n
 set_location_assignment PIN_AG15 -to clk
-set_location_assignment PIN_G15 -to state[2]
-set_location_assignment PIN_G16 -to state[1]
-set_location_assignment PIN_H15 -to state[0]
 set_location_assignment PIN_G21 -to prog_rdy
-set_location_assignment PIN_E22 -to ready
-set_location_assignment PIN_E21 -to busy
-set_location_assignment PIN_F15 -to state[3]
+set_location_assignment PIN_E25 -to state[2]
+set_location_assignment PIN_E22 -to state[1]
+set_location_assignment PIN_E21 -to state[0]
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -entity uart_top -section_id Top
+set_location_assignment PIN_G22 -to busy
+set_location_assignment PIN_E24 -to state[3]
+set_location_assignment PIN_G20 -to ready
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 set_global_assignment -name FAMILY "Cyclone IV E"
 set_global_assignment -name DEVICE EP4CE115F29C7
 set_global_assignment -name TOP_LEVEL_ENTITY microprocessor_top
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.1
-set_global_assignment -name PROJECT_CREATION_TIME_DATE "11:17:28  DECEMBER 02, 2025"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "14:57:18  DECEMBER 10, 2025"
 set_global_assignment -name LAST_QUARTUS_VERSION "20.1.1 Lite Edition"
-set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
-set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
-set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
-set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
-set_global_assignment -name NOMINAL_CORE_SUPPLY_VOLTAGE 1.2V
-set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
-set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/uart_protocol/shift_register_fsm.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/uart_protocol/receiver.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/uart_protocol/display_7_segments.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/uart_protocol/baud_rate_generator.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/program_counter.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/plus_4_or_2_mux.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/physical_register_file.sv
@@ -93,10 +95,11 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/control_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/branch.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/alu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/adder.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/uart_protocol/shift_register_fsm.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/uart_protocol/receiver.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/uart_protocol/display_7_segments.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/uart_protocol/baud_rate_generator.sv
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -entity uart_top -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -entity uart_top -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -entity uart_top -section_id Top
